@@ -1,0 +1,1025 @@
+<!-- saved from url=(0014)about:internet -->
+<html>
+<body>
+<script src="resources/eml_report_loadable_data.js"></script>
+<div class="dead">
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="3,1" id="srcline1">   1</a></span><span class="line"><span class="comment">%Yukai controller.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,2" id="srcline2">   2</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,3" id="srcline3">   3</a></span><span class="line"><span class="keyword">classdef</span> FG_Controller &lt;matlab.System &amp; matlab.system.mixin.Propagates &amp; matlab.system.mixin.SampleTime <span class="comment">%#codegen</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,4" id="srcline4">   4</a></span><span class="line">    <span class="comment">% PROTECTED PROPERTIES ====================================================</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,5" id="srcline5">   5</a></span><span class="line">    <span class="keyword">properties</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,6" id="srcline6">   6</a></span><span class="line">        Kp_pitch;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,7" id="srcline7">   7</a></span><span class="line">        Kd_pitch;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,8" id="srcline8">   8</a></span><span class="line">        Kp_roll;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,9" id="srcline9">   9</a></span><span class="line">        Kd_roll;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,10" id="srcline10">  10</a></span><span class="line">        Kp_yaw;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,11" id="srcline11">  11</a></span><span class="line">        Kd_yaw;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,12" id="srcline12">  12</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,13" id="srcline13">  13</a></span><span class="line">        Kp_abduction;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,14" id="srcline14">  14</a></span><span class="line">        Kp_rotation;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,15" id="srcline15">  15</a></span><span class="line">        Kp_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,16" id="srcline16">  16</a></span><span class="line">        Kp_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,17" id="srcline17">  17</a></span><span class="line">        Kp_toe;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,18" id="srcline18">  18</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,19" id="srcline19">  19</a></span><span class="line">        Kd_abduction;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,20" id="srcline20">  20</a></span><span class="line">        Kd_rotation;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,21" id="srcline21">  21</a></span><span class="line">        Kd_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,22" id="srcline22">  22</a></span><span class="line">        Kd_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,23" id="srcline23">  23</a></span><span class="line">        Kd_toe;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,24" id="srcline24">  24</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,25" id="srcline25">  25</a></span><span class="line">        Kfs_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,26" id="srcline26">  26</a></span><span class="line">        Kfl_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,27" id="srcline27">  27</a></span><span class="line">        Kfs_d;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,28" id="srcline28">  28</a></span><span class="line">        Kfl_d;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,29" id="srcline29">  29</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,30" id="srcline30">  30</a></span><span class="line">        Kp_toe_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,31" id="srcline31">  31</a></span><span class="line">        Kd_toe_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,32" id="srcline32">  32</a></span><span class="line">        Kp_lateral_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,33" id="srcline33">  33</a></span><span class="line">        Kd_lateral_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,34" id="srcline34">  34</a></span><span class="line">        Kp_abduction_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,35" id="srcline35">  35</a></span><span class="line">        Kd_abduction_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,36" id="srcline36">  36</a></span><span class="line">        Kp_thigh_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,37" id="srcline37">  37</a></span><span class="line">        Kd_thigh_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,38" id="srcline38">  38</a></span><span class="line">        Kp_knee_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,39" id="srcline39">  39</a></span><span class="line">        Kd_knee_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,40" id="srcline40">  40</a></span><span class="line">        Kp_rotation_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,41" id="srcline41">  41</a></span><span class="line">        Kd_rotation_stand;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,42" id="srcline42">  42</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,43" id="srcline43">  43</a></span><span class="line">        fil_para_x;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,44" id="srcline44">  44</a></span><span class="line">        fil_para_y;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,45" id="srcline45">  45</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,46" id="srcline46">  46</a></span><span class="line">        stance_thre_ub;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,47" id="srcline47">  47</a></span><span class="line">        stance_thre_lb;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,48" id="srcline48">  48</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,49" id="srcline49">  49</a></span><span class="line">        lateral_velocity_weight;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,50" id="srcline50">  50</a></span><span class="line">        init_lateral_velocity;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,51" id="srcline51">  51</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,52" id="srcline52">  52</a></span><span class="line">        abduction_inward_gain; </span></span>
+<span class="srcline"><span class="lineno"><a href="3,53" id="srcline53">  53</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,54" id="srcline54">  54</a></span><span class="line">        joint_filter_choice;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,55" id="srcline55">  55</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,56" id="srcline56">  56</a></span><span class="line">        shift_time;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,57" id="srcline57">  57</a></span><span class="line">        shift_distance;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,58" id="srcline58">  58</a></span><span class="line">        standing_switch_time;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,59" id="srcline59">  59</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,60" id="srcline60">  60</a></span><span class="line">        toe_tilt_angle;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,61" id="srcline61">  61</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,62" id="srcline62">  62</a></span><span class="line">        final_sw_abduction;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,63" id="srcline63">  63</a></span><span class="line">        final_st_abduction;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,64" id="srcline64">  64</a></span><span class="line">        pre_final_sw_abduction;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,65" id="srcline65">  65</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,66" id="srcline66">  66</a></span><span class="line">        sagittal_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,67" id="srcline67">  67</a></span><span class="line">        lateral_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,68" id="srcline68">  68</a></span><span class="line">        turning_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,69" id="srcline69">  69</a></span><span class="line">        stand_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,70" id="srcline70">  70</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,71" id="srcline71">  71</a></span><span class="line">        u_abduction_cp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,72" id="srcline72">  72</a></span><span class="line">        u_abduction_swing_cp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,73" id="srcline73">  73</a></span><span class="line">        u_thigh_cp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,74" id="srcline74">  74</a></span><span class="line">        u_knee_cp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,75" id="srcline75">  75</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,76" id="srcline76">  76</a></span><span class="line">        fil_para_2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,77" id="srcline77">  77</a></span><span class="line">        fil_para_3;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,78" id="srcline78">  78</a></span><span class="line">        fil_para_4;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,79" id="srcline79">  79</a></span><span class="line">        fil_para_5;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,80" id="srcline80">  80</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,81" id="srcline81">  81</a></span><span class="line">        force_step_end_s;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,82" id="srcline82">  82</a></span><span class="line">    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,83" id="srcline83">  83</a></span><span class="line">    <span class="keyword">properties</span> (Access = private, Constant)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,84" id="srcline84">  84</a></span><span class="line">        TorqueLimits = repmat([112.5;112.5;195.2;195.2;45],[2,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,85" id="srcline85">  85</a></span><span class="line">        ActuatorLimits = [-0.2618, 0.3927;    -0.3927, 0.3927;    -0.8727, 1.3963;    -2.8623, -0.7330;   -2.4435, -0.5236; <span class="keyword">...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,86" id="srcline86">  86</a></span><span class="line">            -0.3927, 0.2618;    -0.3927, 0.3927;    -0.8727, 1.3963;    -2.8623, -0.7330;   -2.4435, -0.5236];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,87" id="srcline87">  87</a></span><span class="line">        Ks1 = 1800;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,88" id="srcline88">  88</a></span><span class="line">        Ks2 = 1600;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,89" id="srcline89">  89</a></span><span class="line">    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,90" id="srcline90">  90</a></span><span class="line">    <span class="keyword">properties</span> (Access = protected)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,91" id="srcline91">  91</a></span><span class="line"> </span></span>
+<span class="srcline"><span class="lineno"><a href="3,92" id="srcline92">  92</a></span><span class="line">        sagittal_offset = -0.01;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,93" id="srcline93">  93</a></span><span class="line">        lateral_offset = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,94" id="srcline94">  94</a></span><span class="line">        turning_offset = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,95" id="srcline95">  95</a></span><span class="line">        stand_offset = -0.01;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,96" id="srcline96">  96</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,97" id="srcline97">  97</a></span><span class="line">        Toe_thigh_offset = 1.0996;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,98" id="srcline98">  98</a></span><span class="line">        safe_TorqueLimits = repmat([80;60;80;190;45],[2,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,99" id="srcline99">  99</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,100" id="srcline100"> 100</a></span><span class="line">        standing_abduction_offset = 0.08;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,101" id="srcline101"> 101</a></span><span class="line">        bezier_degree = 5;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,102" id="srcline102"> 102</a></span><span class="line">    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,103" id="srcline103"> 103</a></span><span class="line">    <span class="comment">% PRIVATE PROPERTIES ====================================================</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,104" id="srcline104"> 104</a></span><span class="line">    <span class="keyword">properties</span> (Access = private)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,105" id="srcline105"> 105</a></span><span class="line">        Kp = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,106" id="srcline106"> 106</a></span><span class="line">        Kd = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,107" id="srcline107"> 107</a></span><span class="line">        stanceLeg = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,108" id="srcline108"> 108</a></span><span class="line">        begin = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,109" id="srcline109"> 109</a></span><span class="line">        Switch = 0; <span class="comment">% if switching stance leg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,110" id="srcline110"> 110</a></span><span class="line">        walking_ini = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,111" id="srcline111"> 111</a></span><span class="line">        step_end = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,112" id="srcline112"> 112</a></span><span class="line">        task = 2; <span class="comment">% 0 is do nothing; 1 is walking; 2 is standing up; 3 is test</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,113" id="srcline113"> 113</a></span><span class="line">        task_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,114" id="srcline114"> 114</a></span><span class="line">        task_next = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,115" id="srcline115"> 115</a></span><span class="line">        t0 = 0; <span class="comment">% the time when starting a step</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,116" id="srcline116"> 116</a></span><span class="line">        t_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,117" id="srcline117"> 117</a></span><span class="line">        t1 = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,118" id="srcline118"> 118</a></span><span class="line">        s1 = 0; <span class="comment">% transition time for stand to walk</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,119" id="srcline119"> 119</a></span><span class="line">        t2 = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,120" id="srcline120"> 120</a></span><span class="line">        s2 = 0; <span class="comment">% transition time for walk to stand</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,121" id="srcline121"> 121</a></span><span class="line">        u_prev = zeros(10,1); <span class="comment">% u in previous iteration</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,122" id="srcline122"> 122</a></span><span class="line">        u_last = zeros(10,1);<span class="comment">% u in last step </span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,123" id="srcline123"> 123</a></span><span class="line">        s_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,124" id="srcline124"> 124</a></span><span class="line">        s_unsat_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,125" id="srcline125"> 125</a></span><span class="line">        dqy_b_start = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,126" id="srcline126"> 126</a></span><span class="line">        gaitparams = struct( <span class="string">'HAlpha'</span>,zeros(10,6),<span class="string">'ct'</span>,0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,127" id="srcline127"> 127</a></span><span class="line">        COMparams = struct(<span class="string">'HAlpha'</span>,zeros(3,12),<span class="string">'ct'</span>,0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,128" id="srcline128"> 128</a></span><span class="line">        SWparams = struct(<span class="string">'HAlpha'</span>,zeros(3,12),<span class="string">'ct'</span>,0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,129" id="srcline129"> 129</a></span><span class="line">        Angleparams = struct(<span class="string">'HAlpha'</span>,zeros(3,6),<span class="string">'ct'</span>,0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,130" id="srcline130"> 130</a></span><span class="line">        OPTparams = struct(<span class="string">'xdes'</span>,zeros(6,1),<span class="string">'dxdes'</span>,zeros(6,1));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,131" id="srcline131"> 131</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,132" id="srcline132"> 132</a></span><span class="line">        foot_placement = 0; <span class="comment">% 1</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,133" id="srcline133"> 133</a></span><span class="line">        pitch_torso_control = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,134" id="srcline134"> 134</a></span><span class="line">        roll_torso_control = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,135" id="srcline135"> 135</a></span><span class="line">        stance_passive = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,136" id="srcline136"> 136</a></span><span class="line">        knee_com = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,137" id="srcline137"> 137</a></span><span class="line">        abduction_com = 0;<span class="comment">% 1</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,138" id="srcline138"> 138</a></span><span class="line">        thigh_compensation = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,139" id="srcline139"> 139</a></span><span class="line">        abduction_swing_com = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,140" id="srcline140"> 140</a></span><span class="line">        reduce_impact = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,141" id="srcline141"> 141</a></span><span class="line">        keep_direction = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,142" id="srcline142"> 142</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,143" id="srcline143"> 143</a></span><span class="line">        to_turn = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,144" id="srcline144"> 144</a></span><span class="line">        to_turn_prev = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,145" id="srcline145"> 145</a></span><span class="line">        tg_yaw = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,146" id="srcline146"> 146</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,147" id="srcline147"> 147</a></span><span class="line">        tg_velocity_x = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,148" id="srcline148"> 148</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,149" id="srcline149"> 149</a></span><span class="line">        uHip_gravity_2 = 1.2; <span class="comment">% for swing leg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,150" id="srcline150"> 150</a></span><span class="line">        dqx_b_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,151" id="srcline151"> 151</a></span><span class="line">        dqy_b_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,152" id="srcline152"> 152</a></span><span class="line">        dqz_b_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,153" id="srcline153"> 153</a></span><span class="line">        dqx_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,154" id="srcline154"> 154</a></span><span class="line">        dqy_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,155" id="srcline155"> 155</a></span><span class="line">        dqz_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,156" id="srcline156"> 156</a></span><span class="line">        com_vel_x_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,157" id="srcline157"> 157</a></span><span class="line">        com_vel_y_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,158" id="srcline158"> 158</a></span><span class="line">        com_vel_z_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,159" id="srcline159"> 159</a></span><span class="line">        com_pos_x_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,160" id="srcline160"> 160</a></span><span class="line">        com_pos_y_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,161" id="srcline161"> 161</a></span><span class="line">        com_pos_z_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,162" id="srcline162"> 162</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,163" id="srcline163"> 163</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,164" id="srcline164"> 164</a></span><span class="line">        pitch_des_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,165" id="srcline165"> 165</a></span><span class="line">        tg_velocity_x_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,166" id="srcline166"> 166</a></span><span class="line">        lateral_move_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,167" id="srcline167"> 167</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,168" id="srcline168"> 168</a></span><span class="line">        LL_des_fil = 0.7;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,169" id="srcline169"> 169</a></span><span class="line">        roll_des_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,170" id="srcline170"> 170</a></span><span class="line">        LL_des = 0.7;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,171" id="srcline171"> 171</a></span><span class="line">        dLL_des_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,172" id="srcline172"> 172</a></span><span class="line">        P_feedback_toe_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,173" id="srcline173"> 173</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,174" id="srcline174"> 174</a></span><span class="line">        comd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,175" id="srcline175"> 175</a></span><span class="line">        dcomd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,176" id="srcline176"> 176</a></span><span class="line">        d2comd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,177" id="srcline177"> 177</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,178" id="srcline178"> 178</a></span><span class="line">        swd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,179" id="srcline179"> 179</a></span><span class="line">        dswd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,180" id="srcline180"> 180</a></span><span class="line">        d2swd = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,181" id="srcline181"> 181</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,182" id="srcline182"> 182</a></span><span class="line">        hd = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,183" id="srcline183"> 183</a></span><span class="line">        dhd = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,184" id="srcline184"> 184</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,185" id="srcline185"> 185</a></span><span class="line">        hd_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,186" id="srcline186"> 186</a></span><span class="line">        dhd_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,187" id="srcline187"> 187</a></span><span class="line">        h0 = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,188" id="srcline188"> 188</a></span><span class="line">        dh0 = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,189" id="srcline189"> 189</a></span><span class="line">        h0_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,190" id="srcline190"> 190</a></span><span class="line">        dh0_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,191" id="srcline191"> 191</a></span><span class="line">        y = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,192" id="srcline192"> 192</a></span><span class="line">        dy = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,193" id="srcline193"> 193</a></span><span class="line">        y_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,194" id="srcline194"> 194</a></span><span class="line">        dy_joint = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,195" id="srcline195"> 195</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,196" id="srcline196"> 196</a></span><span class="line">        hd_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,197" id="srcline197"> 197</a></span><span class="line">        dhd_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,198" id="srcline198"> 198</a></span><span class="line">        h0_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,199" id="srcline199"> 199</a></span><span class="line">        dh0_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,200" id="srcline200"> 200</a></span><span class="line">        y_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,201" id="srcline201"> 201</a></span><span class="line">        dy_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,202" id="srcline202"> 202</a></span><span class="line">        hd_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,203" id="srcline203"> 203</a></span><span class="line">        dhd_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,204" id="srcline204"> 204</a></span><span class="line">        h0_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,205" id="srcline205"> 205</a></span><span class="line">        dh0_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,206" id="srcline206"> 206</a></span><span class="line">        y_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,207" id="srcline207"> 207</a></span><span class="line">        dy_joint_prev = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,208" id="srcline208"> 208</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,209" id="srcline209"> 209</a></span><span class="line">        hd_last = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,210" id="srcline210"> 210</a></span><span class="line">        dhd_last = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,211" id="srcline211"> 211</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,212" id="srcline212"> 212</a></span><span class="line">        comd_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,213" id="srcline213"> 213</a></span><span class="line">        dcomd_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,214" id="srcline214"> 214</a></span><span class="line">        d2comd_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,215" id="srcline215"> 215</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,216" id="srcline216"> 216</a></span><span class="line">        angled = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,217" id="srcline217"> 217</a></span><span class="line">        dangled = zeros(3,1); </span></span>
+<span class="srcline"><span class="lineno"><a href="3,218" id="srcline218"> 218</a></span><span class="line">        d2angled = zeros(3,1); </span></span>
+<span class="srcline"><span class="lineno"><a href="3,219" id="srcline219"> 219</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,220" id="srcline220"> 220</a></span><span class="line">        angled_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,221" id="srcline221"> 221</a></span><span class="line">        dangled_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,222" id="srcline222"> 222</a></span><span class="line">        d2angled_last = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,223" id="srcline223"> 223</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,224" id="srcline224"> 224</a></span><span class="line">        v_final = zeros(2,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,225" id="srcline225"> 225</a></span><span class="line">        v_final_avgy = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,226" id="srcline226"> 226</a></span><span class="line">        tp_last = 0; <span class="comment">% how long does last step take</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,227" id="srcline227"> 227</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,228" id="srcline228"> 228</a></span><span class="line">        sagittal_move = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,229" id="srcline229"> 229</a></span><span class="line">        lateral_move = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,230" id="srcline230"> 230</a></span><span class="line">        rotation_move = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,231" id="srcline231"> 231</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,232" id="srcline232"> 232</a></span><span class="line">        to_stand_step_count = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,233" id="srcline233"> 233</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,234" id="srcline234"> 234</a></span><span class="line">    <span class="keyword">end</span> <span class="comment">% properties</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,235" id="srcline235"> 235</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,236" id="srcline236"> 236</a></span><span class="line">    <span class="comment">% PROTECTED METHODS =====================================================</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,237" id="srcline237"> 237</a></span><span class="line">    <span class="keyword">methods</span> (Access = protected)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,238" id="srcline238"> 238</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,239" id="srcline239"> 239</a></span><span class="line">        <span class="keyword">function</span> [userInputs, Data] = stepImpl(obj, t, cassieOutputs, isSim, GaitLibrary, encoder_fil,state)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,240" id="srcline240"> 240</a></span><span class="line">            <span class="comment">%STEPIMPL System output and state update equations.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,241" id="srcline241"> 241</a></span><span class="line">            </span></span>
+<span class="srcline"><span class="lineno"><a href="3,242" id="srcline242"> 242</a></span><span class="line">            <span class="comment">%% Initialize --------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,243" id="srcline243"> 243</a></span><span class="line">            Data = PreFunctions.Construct_Data;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,244" id="srcline244"> 244</a></span><span class="line">            <span class="comment">% Reset the desired motor torques to zero in case they aren't defined</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,245" id="srcline245"> 245</a></span><span class="line">            userInputs = CassieModule.getUserInStruct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,246" id="srcline246"> 246</a></span><span class="line">            u = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,247" id="srcline247"> 247</a></span><span class="line">            <span class="comment">% Update the Cassie outputs data structure</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,248" id="srcline248"> 248</a></span><span class="line">            RadioButton = RadioChannelToButton(cassieOutputs.pelvis.radio.channel);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,249" id="srcline249"> 249</a></span><span class="line">            obj.Kp = repmat([obj.Kp_abduction;obj.Kp_rotation;obj.Kp_thigh;obj.Kp_knee; obj.Kp_toe],[2,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,250" id="srcline250"> 250</a></span><span class="line">            obj.Kd = repmat([obj.Kd_abduction;obj.Kd_rotation;obj.Kd_thigh;obj.Kd_knee; obj.Kd_toe],[2,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,251" id="srcline251"> 251</a></span><span class="line">            <span class="keyword">if</span> (isSim == 0 &amp;&amp; t&gt;10) || (isSim == 1 &amp;&amp; t&gt;0.1)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,252" id="srcline252"> 252</a></span><span class="line">                obj.begin = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,253" id="srcline253"> 253</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,254" id="srcline254"> 254</a></span><span class="line">            <span class="comment">%% Read Commands</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,255" id="srcline255"> 255</a></span><span class="line">            <span class="comment">% In experiment some settings are different from simulation</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,256" id="srcline256"> 256</a></span><span class="line">            <span class="keyword">if</span> isSim == 0</span></span>
+<span class="srcline"><span class="lineno"><a href="3,257" id="srcline257"> 257</a></span><span class="line">                obj.pitch_torso_control = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,258" id="srcline258"> 258</a></span><span class="line">                obj.knee_com = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,259" id="srcline259"> 259</a></span><span class="line">                obj.abduction_com = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,260" id="srcline260"> 260</a></span><span class="line">                obj.foot_placement = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,261" id="srcline261"> 261</a></span><span class="line">                obj.lateral_offset = obj.lateral_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,262" id="srcline262"> 262</a></span><span class="line">                obj.sagittal_offset = obj.sagittal_offset_exp - 0.02 * RadioButton.S1A;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,263" id="srcline263"> 263</a></span><span class="line">                obj.turning_offset = obj.turning_offset_exp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,264" id="srcline264"> 264</a></span><span class="line">                obj.stand_offset = obj.stand_offset_exp + RadioButton.S2A*0.1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,265" id="srcline265"> 265</a></span><span class="line">            <span class="keyword">end</span> </span></span>
+<span class="srcline"><span class="lineno"><a href="3,266" id="srcline266"> 266</a></span><span class="line">            <span class="comment">% Receive command signal from RC radio</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,267" id="srcline267"> 267</a></span><span class="line">            <span class="keyword">if</span> RadioButton.LVA &lt; 0 <span class="comment">% To prevent walking backward too fast</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,268" id="srcline268"> 268</a></span><span class="line">                p = 0.5;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,269" id="srcline269"> 269</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,270" id="srcline270"> 270</a></span><span class="line">                p = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,271" id="srcline271"> 271</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,272" id="srcline272"> 272</a></span><span class="line">            obj.tg_velocity_x = p* RadioButton.LVA;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,273" id="srcline273"> 273</a></span><span class="line">            obj.tg_velocity_x_fil = YToolkits.first_order_filter(obj.tg_velocity_x_fil, obj.tg_velocity_x, 0.0003);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,274" id="srcline274"> 274</a></span><span class="line">            obj.lateral_move = 0.015*RadioButton.LHA;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,275" id="srcline275"> 275</a></span><span class="line">            obj.lateral_move_fil = YToolkits.first_order_filter(obj.lateral_move_fil, obj.lateral_move, 0.0003);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,276" id="srcline276"> 276</a></span><span class="line">            obj.rotation_move = -0.2*RadioButton.RHA;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,277" id="srcline277"> 277</a></span><span class="line">            <span class="keyword">if</span> abs(RadioButton.RHA)&lt;0.1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,278" id="srcline278"> 278</a></span><span class="line">                obj.to_turn = -1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,279" id="srcline279"> 279</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,280" id="srcline280"> 280</a></span><span class="line">                obj.to_turn = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,281" id="srcline281"> 281</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,282" id="srcline282"> 282</a></span><span class="line">            pitch_des = median([RadioButton.RVA,-0.5,0.5]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,283" id="srcline283"> 283</a></span><span class="line">            obj.pitch_des_fil = YToolkits.first_order_filter(obj.pitch_des_fil, pitch_des, 0.0005);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,284" id="srcline284"> 284</a></span><span class="line">            LL_des = 0.68+RadioButton.LSA*0.2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,285" id="srcline285"> 285</a></span><span class="line">            obj.LL_des_fil = YToolkits.first_order_filter(obj.LL_des_fil,LL_des,obj.fil_para_4);            </span></span>
+<span class="srcline"><span class="lineno"><a href="3,286" id="srcline286"> 286</a></span><span class="line">            roll_des = RadioButton.RHA*0.1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,287" id="srcline287"> 287</a></span><span class="line">            obj.roll_des_fil = YToolkits.first_order_filter(obj.roll_des_fil,roll_des,0.0003); <span class="comment">% cutoff frequency 0.1 Hz;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,288" id="srcline288"> 288</a></span><span class="line">            </span></span>
+<span class="srcline"><span class="lineno"><a href="3,289" id="srcline289"> 289</a></span><span class="line">            <span class="comment">%% state machine ( walk or stand)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,290" id="srcline290"> 290</a></span><span class="line">            <span class="keyword">if</span> RadioButton.SBA == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,291" id="srcline291"> 291</a></span><span class="line">                obj.task_next = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,292" id="srcline292"> 292</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,293" id="srcline293"> 293</a></span><span class="line">                obj.task_next = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,294" id="srcline294"> 294</a></span><span class="line">            <span class="keyword">end</span>      </span></span>
+<span class="srcline"><span class="lineno"><a href="3,295" id="srcline295"> 295</a></span><span class="line">            <span class="keyword">if</span> obj.task_next == 2</span></span>
+<span class="srcline"><span class="lineno"><a href="3,296" id="srcline296"> 296</a></span><span class="line">                obj.t1 = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,297" id="srcline297"> 297</a></span><span class="line">                obj.s1 = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,298" id="srcline298"> 298</a></span><span class="line">            <span class="keyword">end</span>      </span></span>
+<span class="srcline"><span class="lineno"><a href="3,299" id="srcline299"> 299</a></span><span class="line">            <span class="keyword">if</span> obj.task_next ==1 &amp;&amp; obj.s1 &gt; 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,300" id="srcline300"> 300</a></span><span class="line">                obj.task = obj.task_next;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,301" id="srcline301"> 301</a></span><span class="line">                obj.P_feedback_toe_fil = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,302" id="srcline302"> 302</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,303" id="srcline303"> 303</a></span><span class="line">            <span class="keyword">if</span> obj.task_next == 2 &amp;&amp; obj.step_end</span></span>
+<span class="srcline"><span class="lineno"><a href="3,304" id="srcline304"> 304</a></span><span class="line">                obj.task =2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,305" id="srcline305"> 305</a></span><span class="line">                obj.step_end = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,306" id="srcline306"> 306</a></span><span class="line">                obj.t2 = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,307" id="srcline307"> 307</a></span><span class="line">                obj.u_last = obj.u_prev;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,308" id="srcline308"> 308</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,309" id="srcline309"> 309</a></span><span class="line">            </span></span>
+<span class="srcline"><span class="lineno"><a href="3,310" id="srcline310"> 310</a></span><span class="line">            <span class="comment">%% begin calculation</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,311" id="srcline311"> 311</a></span><span class="line">            <span class="keyword">if</span>    t &gt; 0.1 &amp;&amp; obj.begin ==1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,312" id="srcline312"> 312</a></span><span class="line">                <span class="comment">%% get values</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,313" id="srcline313"> 313</a></span><span class="line">                [qyaw, qpitch, qroll, dqyaw, dqpitch, dqroll] = IMU_to_Euler_v2(cassieOutputs.pelvis.vectorNav.orientation, cassieOutputs.pelvis.vectorNav.angularVelocity);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,314" id="srcline314"> 314</a></span><span class="line">                qa = CassieModule.getDriveProperty(cassieOutputs,<span class="string">'position'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,315" id="srcline315"> 315</a></span><span class="line">                dqa = CassieModule.getDriveProperty(cassieOutputs,<span class="string">'velocity'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,316" id="srcline316"> 316</a></span><span class="line">                qj = CassieModule.getJointProperty(cassieOutputs,<span class="string">'position'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,317" id="srcline317"> 317</a></span><span class="line">                dqj = CassieModule.getJointProperty(cassieOutputs,<span class="string">'velocity'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,318" id="srcline318"> 318</a></span><span class="line">                qq = cassieOutputs.pelvis.vectorNav.orientation;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,319" id="srcline319"> 319</a></span><span class="line">                qaL = qa(1:5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,320" id="srcline320"> 320</a></span><span class="line">                qaR = qa(6:10);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,321" id="srcline321"> 321</a></span><span class="line">                qjL =  qj(1:2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,322" id="srcline322"> 322</a></span><span class="line">                qjR =  qj(4:5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,323" id="srcline323"> 323</a></span><span class="line">                qsL = getSpringDeflectionAngle(qaL(4),qjL(1),qjL(2));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,324" id="srcline324"> 324</a></span><span class="line">                qsR = getSpringDeflectionAngle(qaR(4),qjR(1),qjR(2));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,325" id="srcline325"> 325</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,326" id="srcline326"> 326</a></span><span class="line">                <span class="comment">% Get current velocities</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,327" id="srcline327"> 327</a></span><span class="line">                dqaL =  dqa(1:5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,328" id="srcline328"> 328</a></span><span class="line">                dqaR =  dqa(6:10);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,329" id="srcline329"> 329</a></span><span class="line">                dqjL =  dqj(1:2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,330" id="srcline330"> 330</a></span><span class="line">                dqjR =  dqj(4:5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,331" id="srcline331"> 331</a></span><span class="line">                dqsL = getSpringDeflectionRate(dqaL(4),dqjL(1),dqjL(2));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,332" id="srcline332"> 332</a></span><span class="line">                dqsR = getSpringDeflectionRate(dqaR(4),dqjR(1),dqjR(2));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,333" id="srcline333"> 333</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,334" id="srcline334"> 334</a></span><span class="line">                <span class="comment">% assign the value</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,335" id="srcline335"> 335</a></span><span class="line">                q_abduction_R = qaR(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,336" id="srcline336"> 336</a></span><span class="line">                q_rotation_R = qaR(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,337" id="srcline337"> 337</a></span><span class="line">                q_thigh_R = qaR(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,338" id="srcline338"> 338</a></span><span class="line">                q_thigh_knee_R = qaR(4);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,339" id="srcline339"> 339</a></span><span class="line">                q_knee_shin_R = qjR(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,340" id="srcline340"> 340</a></span><span class="line">                q_thigh_shin_R = q_thigh_knee_R+q_knee_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,341" id="srcline341"> 341</a></span><span class="line">                q_shin_tarsus_R = qjR(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,342" id="srcline342"> 342</a></span><span class="line">                q_toe_R = qaR(5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,343" id="srcline343"> 343</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,344" id="srcline344"> 344</a></span><span class="line">                q_abduction_L = qaL(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,345" id="srcline345"> 345</a></span><span class="line">                q_rotation_L = qaL(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,346" id="srcline346"> 346</a></span><span class="line">                q_thigh_L = qaL(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,347" id="srcline347"> 347</a></span><span class="line">                q_thigh_knee_L = qaL(4);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,348" id="srcline348"> 348</a></span><span class="line">                q_knee_shin_L = qjL(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,349" id="srcline349"> 349</a></span><span class="line">                q_thigh_shin_L = q_thigh_knee_L+q_knee_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,350" id="srcline350"> 350</a></span><span class="line">                q_shin_tarsus_L = qjL(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,351" id="srcline351"> 351</a></span><span class="line">                q_toe_L = qaL(5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,352" id="srcline352"> 352</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,353" id="srcline353"> 353</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,354" id="srcline354"> 354</a></span><span class="line">                dq_abduction_R = dqaR(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,355" id="srcline355"> 355</a></span><span class="line">                dq_rotation_R = dqaR(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,356" id="srcline356"> 356</a></span><span class="line">                dq_thigh_R = dqaR(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,357" id="srcline357"> 357</a></span><span class="line">                dq_thigh_knee_R = dqaR(4);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,358" id="srcline358"> 358</a></span><span class="line">                dq_knee_shin_R = dqjR(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,359" id="srcline359"> 359</a></span><span class="line">                dq_thigh_shin_R = dq_thigh_knee_R+dq_knee_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,360" id="srcline360"> 360</a></span><span class="line">                dq_shin_tarsus_R = dqjR(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,361" id="srcline361"> 361</a></span><span class="line">                dq_toe_R = dqaR(5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,362" id="srcline362"> 362</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,363" id="srcline363"> 363</a></span><span class="line">                dq_abduction_L = dqaL(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,364" id="srcline364"> 364</a></span><span class="line">                dq_rotation_L = dqaL(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,365" id="srcline365"> 365</a></span><span class="line">                dq_thigh_L = dqaL(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,366" id="srcline366"> 366</a></span><span class="line">                dq_thigh_knee_L = dqaL(4);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,367" id="srcline367"> 367</a></span><span class="line">                dq_knee_shin_L = dqjL(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,368" id="srcline368"> 368</a></span><span class="line">                dq_thigh_shin_L = dq_thigh_knee_L+dq_knee_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,369" id="srcline369"> 369</a></span><span class="line">                dq_shin_tarsus_L = dqjL(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,370" id="srcline370"> 370</a></span><span class="line">                dq_toe_L = dqaL(5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,371" id="srcline371"> 371</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,372" id="srcline372"> 372</a></span><span class="line">                qall = [  state(1);  -state(2);              -state(3);              qyaw;           qpitch;              qroll;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,373" id="srcline373"> 373</a></span><span class="line">                    q_abduction_L;	q_rotation_L;	q_thigh_L;      q_thigh_knee_L;     q_knee_shin_L;      q_shin_tarsus_L;    q_toe_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,374" id="srcline374"> 374</a></span><span class="line">                    q_abduction_R;	q_rotation_R;	q_thigh_R;      q_thigh_knee_R;     q_knee_shin_R;      q_shin_tarsus_R;    q_toe_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,375" id="srcline375"> 375</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,376" id="srcline376"> 376</a></span><span class="line">                dqall = [ state(4);  -state(5);              -state(6);              dqyaw;         dqpitch;            dqroll;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,377" id="srcline377"> 377</a></span><span class="line">                    dq_abduction_L;	dq_rotation_L;	dq_thigh_L;     dq_thigh_knee_L;    dq_knee_shin_L;     dq_shin_tarsus_L;   dq_toe_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,378" id="srcline378"> 378</a></span><span class="line">                    dq_abduction_R;	dq_rotation_R;	dq_thigh_R;     dq_thigh_knee_R;    dq_knee_shin_R;     dq_shin_tarsus_R;   dq_toe_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,379" id="srcline379"> 379</a></span><span class="line">                <span class="comment">%% process Data</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,380" id="srcline380"> 380</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,381" id="srcline381"> 381</a></span><span class="line">                <span class="comment">% get current h0_joint and h0</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,382" id="srcline382"> 382</a></span><span class="line">                obj.h0_joint=[qaL; qaR];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,383" id="srcline383"> 383</a></span><span class="line">                obj.dh0_joint = [dqaL; dqaR];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,384" id="srcline384"> 384</a></span><span class="line">                <span class="keyword">if</span> obj.joint_filter_choice == 1 <span class="comment">% Use AR joint filter or custom filter.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,385" id="srcline385"> 385</a></span><span class="line">                    obj.dh0_joint([3,4,5,8,9,10]) = encoder_fil([3,4,5,8,9,10]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,386" id="srcline386"> 386</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,387" id="srcline387"> 387</a></span><span class="line">                [ obj.h0, obj.dh0] = get_FK(obj, obj.h0_joint,obj.dh0_joint);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,388" id="srcline388"> 388</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,389" id="srcline389"> 389</a></span><span class="line">                <span class="comment">% get GRF and s</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,390" id="srcline390"> 390</a></span><span class="line">                <span class="keyword">if</span> cassieOutputs.isCalibrated == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,391" id="srcline391"> 391</a></span><span class="line">                    [ GRF_L, GRF_R ] = get_GRF(obj,qall,qsR,qsL,0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,392" id="srcline392"> 392</a></span><span class="line">                <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,393" id="srcline393"> 393</a></span><span class="line">                    GRF_L = [0;0];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,394" id="srcline394"> 394</a></span><span class="line">                    GRF_R = [0;0];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,395" id="srcline395"> 395</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,396" id="srcline396"> 396</a></span><span class="line">                GRF_v = [GRF_L(2) GRF_R(2) ];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,397" id="srcline397"> 397</a></span><span class="line">                [ s_L, s_R ] = obj.get_s_LR(GRF_v); <span class="comment">% s is normalized between 0 and 1, 0 means the leg is in air and 1 means leg is on ground.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,398" id="srcline398"> 398</a></span><span class="line">                s_LR = [s_L; s_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,399" id="srcline399"> 399</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,400" id="srcline400"> 400</a></span><span class="line">                <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,401" id="srcline401"> 401</a></span><span class="line">                    swing_grf = GRF_L(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,402" id="srcline402"> 402</a></span><span class="line">                    stance_grf = GRF_R(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,403" id="srcline403"> 403</a></span><span class="line">                <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,404" id="srcline404"> 404</a></span><span class="line">                    swing_grf = GRF_R(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,405" id="srcline405"> 405</a></span><span class="line">                    stance_grf = GRF_L(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,406" id="srcline406"> 406</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,407" id="srcline407"> 407</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,408" id="srcline408"> 408</a></span><span class="line">                <span class="comment">% if not walking in previous moment, reset the current hd</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,409" id="srcline409"> 409</a></span><span class="line">                <span class="comment">% to smooth the torque</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,410" id="srcline410"> 410</a></span><span class="line">                <span class="keyword">if</span> obj.task == 1 &amp;&amp; obj.task_prev~=1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,411" id="srcline411"> 411</a></span><span class="line">                    obj.walking_ini = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,412" id="srcline412"> 412</a></span><span class="line">                    obj.hd_joint =obj.h0_joint + obj.u_prev./obj.Kp;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,413" id="srcline413"> 413</a></span><span class="line">                    obj.dhd_joint = obj.dh0_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,414" id="srcline414"> 414</a></span><span class="line">                    [obj.hd, obj.dhd] = get_FK(obj, obj.hd_joint, obj.dhd_joint);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,415" id="srcline415"> 415</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,416" id="srcline416"> 416</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,417" id="srcline417"> 417</a></span><span class="line">                <span class="comment">% If Cassie is standing or turning, swing leg is NOT commanded to maintain the direction of the robot.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,418" id="srcline418"> 418</a></span><span class="line">                <span class="keyword">if</span> (obj.to_turn ~=1 &amp;&amp; obj.to_turn_prev == 1) || obj.task == 2</span></span>
+<span class="srcline"><span class="lineno"><a href="3,419" id="srcline419"> 419</a></span><span class="line">                    obj.tg_yaw = qyaw;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,420" id="srcline420"> 420</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,421" id="srcline421"> 421</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,422" id="srcline422"> 422</a></span><span class="line">                <span class="comment">% what happens when a step end and a new step begin.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,423" id="srcline423"> 423</a></span><span class="line">                <span class="keyword">if</span> (obj.s_prev &gt;=0.5 &amp;&amp; swing_grf &gt;obj.stance_thre_ub) || obj.walking_ini == 0 || obj.s_unsat_prev &gt; obj.force_step_end_s</span></span>
+<span class="srcline"><span class="lineno"><a href="3,424" id="srcline424"> 424</a></span><span class="line">                    obj.stanceLeg = -obj.stanceLeg;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,425" id="srcline425"> 425</a></span><span class="line">                    <span class="keyword">if</span> obj.walking_ini == 0</span></span>
+<span class="srcline"><span class="lineno"><a href="3,426" id="srcline426"> 426</a></span><span class="line">                        obj.stanceLeg = -1; <span class="comment">% At the beginning of a step. stanceLeg is always left leg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,427" id="srcline427"> 427</a></span><span class="line">                    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,428" id="srcline428"> 428</a></span><span class="line">                    obj.tp_last = t - obj.t0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,429" id="srcline429"> 429</a></span><span class="line">                    obj.t0=t;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,430" id="srcline430"> 430</a></span><span class="line">                    obj.t_prev = obj.t0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,431" id="srcline431"> 431</a></span><span class="line">                    obj.s_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,432" id="srcline432"> 432</a></span><span class="line">                    obj.s_unsat_prev = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,433" id="srcline433"> 433</a></span><span class="line">                    obj.Switch = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,434" id="srcline434"> 434</a></span><span class="line">                    obj.walking_ini =1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,435" id="srcline435"> 435</a></span><span class="line">                    obj.u_last = obj.u_prev; <span class="comment">% u_prev is the torque command in previous iteration, u_last is the torque command at the end of last step</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,436" id="srcline436"> 436</a></span><span class="line">                    <span class="comment">% save the velocity data at the end of a step.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,437" id="srcline437"> 437</a></span><span class="line">                    obj.v_final = [obj.dqx_b_fil; obj.dqy_b_fil];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,438" id="srcline438"> 438</a></span><span class="line">                    obj.v_final_avgy = (obj.lateral_velocity_weight*obj.dqy_b_fil+(1-obj.lateral_velocity_weight)*obj.dqy_b_start);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,439" id="srcline439"> 439</a></span><span class="line">                    obj.dqy_b_start = obj.dqy_b_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,440" id="srcline440"> 440</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,441" id="srcline441"> 441</a></span><span class="line">                    obj.hd_last = obj.hd; <span class="comment">% save the desired output at the end of a step. It is used to reset the first 2 bezier coefficient in next step to smooth the torque.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,442" id="srcline442"> 442</a></span><span class="line">                    obj.dhd_last = obj.dhd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,443" id="srcline443"> 443</a></span><span class="line">                        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,444" id="srcline444"> 444</a></span><span class="line">                    <span class="comment">% if command to stand, decide if should stand ( stand if the last step is left stance and the command is not made during this step or the previous step) </span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,445" id="srcline445"> 445</a></span><span class="line">                    <span class="keyword">if</span> obj.task_next == 2 &amp;&amp; obj.stanceLeg == 1 &amp;&amp; obj.to_stand_step_count &gt;= 1.99</span></span>
+<span class="srcline"><span class="lineno"><a href="3,446" id="srcline446"> 446</a></span><span class="line">                        obj.step_end = 1; </span></span>
+<span class="srcline"><span class="lineno"><a href="3,447" id="srcline447"> 447</a></span><span class="line">                    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,448" id="srcline448"> 448</a></span><span class="line">                    <span class="comment">% count the steps after command to stand</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,449" id="srcline449"> 449</a></span><span class="line">                    <span class="keyword">if</span> obj.task_next == 2 &amp;&amp; obj.task ~= 2</span></span>
+<span class="srcline"><span class="lineno"><a href="3,450" id="srcline450"> 450</a></span><span class="line">                        obj.to_stand_step_count = obj.to_stand_step_count + 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,451" id="srcline451"> 451</a></span><span class="line">                    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,452" id="srcline452"> 452</a></span><span class="line">                    <span class="keyword">if</span> obj.step_end == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,453" id="srcline453"> 453</a></span><span class="line">                        obj.to_stand_step_count = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,454" id="srcline454"> 454</a></span><span class="line">                    <span class="keyword">end</span>    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,455" id="srcline455"> 455</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,456" id="srcline456"> 456</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,457" id="srcline457"> 457</a></span><span class="line">                <span class="comment">% Get bezier coefficient for gait from Gaitlibrary</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,458" id="srcline458"> 458</a></span><span class="line">                obj.gaitparams = ControlPolicy( obj, GaitLibrary, obj.dqx_b_fil );</span></span>
+<span class="srcline"><span class="lineno"><a href="3,459" id="srcline459"> 459</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,460" id="srcline460"> 460</a></span><span class="line">                s_unsat = obj.s_unsat_prev + (t - obj.t_prev)*obj.gaitparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,461" id="srcline461"> 461</a></span><span class="line">                s = min(s_unsat,1.05); <span class="comment">% here s indicates the phase, 0 is the beginning of a step and 1 is the end of a step.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,462" id="srcline462"> 462</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,463" id="srcline463"> 463</a></span><span class="line">                <span class="comment">% Generate some bezier curve that can be used later.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,464" id="srcline464"> 464</a></span><span class="line">                sf_b = [0,0,ones(1,20)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,465" id="srcline465"> 465</a></span><span class="line">                s_fast = YToolkits.bezier(sf_b,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,466" id="srcline466"> 466</a></span><span class="line">                ds_fast = YToolkits.dbezier(sf_b,s)*obj.gaitparams.ct;             </span></span>
+<span class="srcline"><span class="lineno"><a href="3,467" id="srcline467"> 467</a></span><span class="line">                sl_b = [0,0,ones(1,4)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,468" id="srcline468"> 468</a></span><span class="line">                s_slow = YToolkits.bezier(sl_b,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,469" id="srcline469"> 469</a></span><span class="line">                ds_slow = YToolkits.dbezier(sl_b,s)*obj.gaitparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,470" id="srcline470"> 470</a></span><span class="line">                sendl_b = [ones(1,4),0,0];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,471" id="srcline471"> 471</a></span><span class="line">                send_slow = YToolkits.bezier(sendl_b,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,472" id="srcline472"> 472</a></span><span class="line">                dsend_slow = YToolkits.dbezier(sendl_b,s)*obj.gaitparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,473" id="srcline473"> 473</a></span><span class="line">                sendf_b = [ones(1,20),0,0];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,474" id="srcline474"> 474</a></span><span class="line">                send_fast = YToolkits.bezier(sendf_b,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,475" id="srcline475"> 475</a></span><span class="line">                dsend_fast = YToolkits.dbezier(sendf_b,s)*obj.gaitparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,476" id="srcline476"> 476</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,477" id="srcline477"> 477</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,478" id="srcline478"> 478</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,479" id="srcline479"> 479</a></span><span class="line">                <span class="comment">% order the index of stance leg and swing leg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,480" id="srcline480"> 480</a></span><span class="line">                <span class="keyword">if</span> obj.stanceLeg == 1 <span class="comment">% right stanceleg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,481" id="srcline481"> 481</a></span><span class="line">                    st_abduction = 6;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,482" id="srcline482"> 482</a></span><span class="line">                    st_rotation = 7;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,483" id="srcline483"> 483</a></span><span class="line">                    st_thigh = 8;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,484" id="srcline484"> 484</a></span><span class="line">                    st_knee = 9;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,485" id="srcline485"> 485</a></span><span class="line">                    st_toe = 10;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,486" id="srcline486"> 486</a></span><span class="line">                    sw_abduction = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,487" id="srcline487"> 487</a></span><span class="line">                    sw_rotation = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,488" id="srcline488"> 488</a></span><span class="line">                    sw_thigh = 3;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,489" id="srcline489"> 489</a></span><span class="line">                    sw_knee = 4;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,490" id="srcline490"> 490</a></span><span class="line">                    sw_toe =5;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,491" id="srcline491"> 491</a></span><span class="line">                    GRF_st_index = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,492" id="srcline492"> 492</a></span><span class="line">                    GRF_sw_index = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,493" id="srcline493"> 493</a></span><span class="line">                    st_index = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,494" id="srcline494"> 494</a></span><span class="line">                    sw_index = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,495" id="srcline495"> 495</a></span><span class="line">                    abduction_direction = -1; <span class="comment">% when the hip abduct outside, the sign is negative</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,496" id="srcline496"> 496</a></span><span class="line">                    st_LA = st_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,497" id="srcline497"> 497</a></span><span class="line">                    st_LL = st_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,498" id="srcline498"> 498</a></span><span class="line">                    sw_LA = sw_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,499" id="srcline499"> 499</a></span><span class="line">                    sw_LL = sw_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,500" id="srcline500"> 500</a></span><span class="line">                <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,501" id="srcline501"> 501</a></span><span class="line">                    st_abduction = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,502" id="srcline502"> 502</a></span><span class="line">                    st_rotation = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,503" id="srcline503"> 503</a></span><span class="line">                    st_thigh = 3;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,504" id="srcline504"> 504</a></span><span class="line">                    st_knee = 4;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,505" id="srcline505"> 505</a></span><span class="line">                    st_toe = 5;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,506" id="srcline506"> 506</a></span><span class="line">                    sw_abduction = 6;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,507" id="srcline507"> 507</a></span><span class="line">                    sw_rotation = 7;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,508" id="srcline508"> 508</a></span><span class="line">                    sw_thigh = 8;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,509" id="srcline509"> 509</a></span><span class="line">                    sw_knee = 9;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,510" id="srcline510"> 510</a></span><span class="line">                    sw_toe = 10;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,511" id="srcline511"> 511</a></span><span class="line">                    GRF_st_index = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,512" id="srcline512"> 512</a></span><span class="line">                    GRF_sw_index = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,513" id="srcline513"> 513</a></span><span class="line">                    st_index = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,514" id="srcline514"> 514</a></span><span class="line">                    sw_index = 2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,515" id="srcline515"> 515</a></span><span class="line">                    abduction_direction = 1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,516" id="srcline516"> 516</a></span><span class="line">                    st_LA = st_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,517" id="srcline517"> 517</a></span><span class="line">                    st_LL = st_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,518" id="srcline518"> 518</a></span><span class="line">                    sw_LA = sw_thigh;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,519" id="srcline519"> 519</a></span><span class="line">                    sw_LL = sw_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,520" id="srcline520"> 520</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,521" id="srcline521"> 521</a></span><span class="line">                <span class="comment">% estimating velocity</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,522" id="srcline522"> 522</a></span><span class="line">                [dqx,dqy,dqz] = get_velocity_v3(obj,qall,dqall); <span class="comment">% v1 toe joint; v2 toe bottom; v3 toe back; v4 toe front</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,523" id="srcline523"> 523</a></span><span class="line">                <span class="comment">% if the stance leg is off ground, set the velocity be 0 and let the velocity filter do the work</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,524" id="srcline524"> 524</a></span><span class="line">                dqx = s_LR(st_index)*dqx;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,525" id="srcline525"> 525</a></span><span class="line">                dqy = s_LR(st_index)*dqy;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,526" id="srcline526"> 526</a></span><span class="line">                dqz = s_LR(st_index)*dqz;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,527" id="srcline527"> 527</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,528" id="srcline528"> 528</a></span><span class="line">                <span class="comment">% rotate the velocity to the torso frame ( YAW only!!!)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,529" id="srcline529"> 529</a></span><span class="line">                Rz = YToolkits.Angles.Rz(qyaw);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,530" id="srcline530"> 530</a></span><span class="line">                dq_b = Rz'*[dqx;dqy;dqz];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,531" id="srcline531"> 531</a></span><span class="line">                dqx_b = dq_b(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,532" id="srcline532"> 532</a></span><span class="line">                dqy_b = dq_b(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,533" id="srcline533"> 533</a></span><span class="line">                dqz_b = dq_b(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,534" id="srcline534"> 534</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,535" id="srcline535"> 535</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,536" id="srcline536"> 536</a></span><span class="line">                dqall_g = [ dqx;  dqy;              dqz;              dqyaw;         dqpitch;            dqroll;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,537" id="srcline537"> 537</a></span><span class="line">                      dq_abduction_L;	dq_rotation_L;	dq_thigh_L;  dq_thigh_knee_L; dq_knee_shin_L;  dq_shin_tarsus_L; dq_toe_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,538" id="srcline538"> 538</a></span><span class="line">                      dq_abduction_R;	dq_rotation_R;	dq_thigh_R;  dq_thigh_knee_R; dq_knee_shin_R;  dq_shin_tarsus_R; dq_toe_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,539" id="srcline539"> 539</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,540" id="srcline540"> 540</a></span><span class="line">                <span class="comment">% These foot velocitiy and position has the assumption that torso xyz is</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,541" id="srcline541"> 541</a></span><span class="line">                <span class="comment">% fixed at [0;0;0](but torso velocity is not 0). foot position is the toe joint position. IN THE BODY FRAME!</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,542" id="srcline542"> 542</a></span><span class="line">                [l_foot_v, r_foot_v] = get_feet_velocity(qall,dqall_g);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,543" id="srcline543"> 543</a></span><span class="line">                [l_foot_p, r_foot_p] = get_feet_position(qall,dqall_g);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,544" id="srcline544"> 544</a></span><span class="line">                r_foot_v = Rz'*r_foot_v;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,545" id="srcline545"> 545</a></span><span class="line">                l_foot_v = Rz'*l_foot_v;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,546" id="srcline546"> 546</a></span><span class="line">                r_foot_p = Rz'*r_foot_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,547" id="srcline547"> 547</a></span><span class="line">                l_foot_p = Rz'*l_foot_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,548" id="srcline548"> 548</a></span><span class="line">                foot_px = [l_foot_p(1); r_foot_p(1)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,549" id="srcline549"> 549</a></span><span class="line">                foot_py = [l_foot_p(2);r_foot_p(2)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,550" id="srcline550"> 550</a></span><span class="line">                foot_pz = [l_foot_p(3); r_foot_p(3)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,551" id="srcline551"> 551</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,552" id="srcline552"> 552</a></span><span class="line">                <span class="comment">% position and velocity of COM has the assumption that</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,553" id="srcline553"> 553</a></span><span class="line">                <span class="comment">% torso position is at origion but velocity is not 0.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,554" id="srcline554"> 554</a></span><span class="line">                com_pos = ComPosition(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,555" id="srcline555"> 555</a></span><span class="line">                com_pos = com_pos';</span></span>
+<span class="srcline"><span class="lineno"><a href="3,556" id="srcline556"> 556</a></span><span class="line">                com_vel = ComVelocity(qall,dqall_g);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,557" id="srcline557"> 557</a></span><span class="line">                com_pos = Rz'*com_pos;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,558" id="srcline558"> 558</a></span><span class="line">                com_vel = Rz'*com_vel;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,559" id="srcline559"> 559</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,560" id="srcline560"> 560</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,561" id="srcline561"> 561</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,562" id="srcline562"> 562</a></span><span class="line">                <span class="comment">% filter the velocity</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,563" id="srcline563"> 563</a></span><span class="line">                obj.dqx_fil = YToolkits.first_order_filter(obj.dqx_fil,dqx,obj.fil_para_x);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,564" id="srcline564"> 564</a></span><span class="line">                obj.dqy_fil = YToolkits.first_order_filter(obj.dqy_fil,dqy,obj.fil_para_y);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,565" id="srcline565"> 565</a></span><span class="line">                obj.dqz_fil = YToolkits.first_order_filter(obj.dqz_fil,dqz,obj.fil_para_x);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,566" id="srcline566"> 566</a></span><span class="line">                obj.dqx_b_fil = YToolkits.first_order_filter(obj.dqx_b_fil,dqx_b,obj.fil_para_x);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,567" id="srcline567"> 567</a></span><span class="line">                obj.dqy_b_fil = YToolkits.first_order_filter(obj.dqy_b_fil,dqy_b,obj.fil_para_y);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,568" id="srcline568"> 568</a></span><span class="line">                obj.dqz_b_fil = YToolkits.first_order_filter(obj.dqz_b_fil,dqz_b,obj.fil_para_x);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,569" id="srcline569"> 569</a></span><span class="line">                obj.com_vel_x_fil = YToolkits.first_order_filter(obj.com_vel_x_fil,com_vel(1),obj.fil_para_2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,570" id="srcline570"> 570</a></span><span class="line">                obj.com_vel_y_fil = YToolkits.first_order_filter(obj.com_vel_y_fil,com_vel(2),obj.fil_para_2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,571" id="srcline571"> 571</a></span><span class="line">                obj.com_vel_z_fil = YToolkits.first_order_filter(obj.com_vel_z_fil,com_vel(3),obj.fil_para_2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,572" id="srcline572"> 572</a></span><span class="line">                obj.com_pos_x_fil = YToolkits.first_order_filter(obj.com_pos_x_fil,com_pos(1),obj.fil_para_3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,573" id="srcline573"> 573</a></span><span class="line">                obj.com_pos_y_fil = YToolkits.first_order_filter(obj.com_pos_y_fil,com_pos(2),obj.fil_para_3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,574" id="srcline574"> 574</a></span><span class="line">                obj.com_pos_z_fil = YToolkits.first_order_filter(obj.com_pos_z_fil,com_pos(3),obj.fil_para_3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,575" id="srcline575"> 575</a></span><span class="line">                <span class="comment">%% walking</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,576" id="srcline576"> 576</a></span><span class="line">                <span class="keyword">if</span> obj.task == 1 <span class="comment">% walking</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,577" id="srcline577"> 577</a></span><span class="line">                    <span class="comment">% Compute desired outputs ( here the outputs dose not</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,578" id="srcline578"> 578</a></span><span class="line">                    <span class="comment">% include torso orientation. the outputs will be</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,579" id="srcline579"> 579</a></span><span class="line">                    <span class="comment">% modified later</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,580" id="srcline580"> 580</a></span><span class="line">                    obj.hd = YToolkits.bezier(obj.gaitparams.HAlpha,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,581" id="srcline581"> 581</a></span><span class="line">                    obj.dhd = YToolkits.dbezier(obj.gaitparams.HAlpha,s)*obj.gaitparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,582" id="srcline582"> 582</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,583" id="srcline583"> 583</a></span><span class="line">                    obj.comd = YToolkits.bezier(obj.COMparams.HAlpha,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,584" id="srcline584"> 584</a></span><span class="line">                    obj.dcomd = YToolkits.dbezier(obj.COMparams.HAlpha,s)*obj.COMparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,585" id="srcline585"> 585</a></span><span class="line">                    obj.d2comd = YToolkits.d2bezier(obj.COMparams.HAlpha,s)*(obj.COMparams.ct)^2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,586" id="srcline586"> 586</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,587" id="srcline587"> 587</a></span><span class="line">                    obj.swd = YToolkits.bezier(obj.SWparams.HAlpha,s);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,588" id="srcline588"> 588</a></span><span class="line">                    obj.dswd = YToolkits.dbezier(obj.SWparams.HAlpha,s)*obj.COMparams.ct;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,589" id="srcline589"> 589</a></span><span class="line">                    obj.d2swd = YToolkits.d2bezier(obj.SWparams.HAlpha,s)*(obj.COMparams.ct)^2;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,590" id="srcline590"> 590</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,591" id="srcline591"> 591</a></span><span class="line">                    <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,592" id="srcline592"> 592</a></span><span class="line">                        com0 = ComPosition(qall)' - p_RightToeBottom(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,593" id="srcline593"> 593</a></span><span class="line">                        dcom0 = ComVelocity(qall,dqall) - Jp_RightToeBottom(qall)*dqall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,594" id="srcline594"> 594</a></span><span class="line">                        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,595" id="srcline595"> 595</a></span><span class="line">                        sw0 = p_LeftToeBottom(qall) - p_RightToeBottom(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,596" id="srcline596"> 596</a></span><span class="line">                        dsw0 = Jp_LeftToeBottom(qall)*dqall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,597" id="srcline597"> 597</a></span><span class="line">                    <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,598" id="srcline598"> 598</a></span><span class="line">                        com0 = ComPosition(qall)' - p_LeftToeBottom(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,599" id="srcline599"> 599</a></span><span class="line">                        dcom0 = ComVelocity(qall,dqall) - Jp_LeftToeBottom(qall)*dqall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,600" id="srcline600"> 600</a></span><span class="line">                        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,601" id="srcline601"> 601</a></span><span class="line">                        sw0 = p_RightToeBottom(qall) - p_LeftToeBottom(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,602" id="srcline602"> 602</a></span><span class="line">                        dsw0 = Jp_RightToeBottom(qall)*dqall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,603" id="srcline603"> 603</a></span><span class="line">                    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,604" id="srcline604"> 604</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,605" id="srcline605"> 605</a></span><span class="line">                    err1 = obj.swd - sw0; err1 = err1([1,2]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,606" id="srcline606"> 606</a></span><span class="line">                    derr1 = obj.dswd - dsw0; derr1 = derr1([1,2]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,607" id="srcline607"> 607</a></span><span class="line">                    d2x1_des = obj.d2comd([1,2]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,608" id="srcline608"> 608</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,609" id="srcline609"> 609</a></span><span class="line">                    err2 = obj.comd - com0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,610" id="srcline610"> 610</a></span><span class="line">                    derr2 = obj.dcomd - dcom0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,611" id="srcline611"> 611</a></span><span class="line">                    d2x2_des = obj.d2comd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,612" id="srcline612"> 612</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,613" id="srcline613"> 613</a></span><span class="line">                    err3 = -qall([1,2,3]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,614" id="srcline614"> 614</a></span><span class="line">                    err3(3) = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,615" id="srcline615"> 615</a></span><span class="line">                    derr3 = -dqall([1,2,3]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,616" id="srcline616"> 616</a></span><span class="line">                    d2x3_des = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,617" id="srcline617"> 617</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,618" id="srcline618"> 618</a></span><span class="line">                    u = WBC_cone_v3(qall,dqall,obj.stanceLeg,<span class="keyword">...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,619" id="srcline619"> 619</a></span><span class="line">                        d2x1_des,err1,derr1,<span class="keyword">...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,620" id="srcline620"> 620</a></span><span class="line">                        d2x2_des,err2,derr2,<span class="keyword">...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,621" id="srcline621"> 621</a></span><span class="line">                        d2x3_des,err3,derr3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,622" id="srcline622"> 622</a></span><span class="line">                    u = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,623" id="srcline623"> 623</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,624" id="srcline624"> 624</a></span><span class="line">                    <span class="comment">% Construct Data</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,625" id="srcline625"> 625</a></span><span class="line">                    Data.hd = obj.hd; </span></span>
+<span class="srcline"><span class="lineno"><a href="3,626" id="srcline626"> 626</a></span><span class="line">                    Data.dhd = obj.dhd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,627" id="srcline627"> 627</a></span><span class="line">                    Data.hd_joint = obj.hd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,628" id="srcline628"> 628</a></span><span class="line">                    Data.dhd_joint = obj.dhd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,629" id="srcline629"> 629</a></span><span class="line">                    Data.y_joint = obj.y_joint ;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,630" id="srcline630"> 630</a></span><span class="line">                    Data.dy_joint   = obj.dy_joint ;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,631" id="srcline631"> 631</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,632" id="srcline632"> 632</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,633" id="srcline633"> 633</a></span><span class="line">                <span class="comment">%% stand up</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,634" id="srcline634"> 634</a></span><span class="line">                <span class="keyword">if</span> obj.task == 2              </span></span>
+<span class="srcline"><span class="lineno"><a href="3,635" id="srcline635"> 635</a></span><span class="line">                    <span class="comment">% If next task is to walk, shift the center of mass to</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,636" id="srcline636"> 636</a></span><span class="line">                    <span class="comment">% left</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,637" id="srcline637"> 637</a></span><span class="line">                    <span class="keyword">if</span> obj.task_next == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,638" id="srcline638"> 638</a></span><span class="line">                        obj.t1 = (obj.t1 + (t - obj.t_prev));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,639" id="srcline639"> 639</a></span><span class="line">                        obj.s1 = obj.t1/obj.shift_time;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,640" id="srcline640"> 640</a></span><span class="line">                        lateral_shift = obj.shift_distance * obj.s1;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,641" id="srcline641"> 641</a></span><span class="line">                    <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,642" id="srcline642"> 642</a></span><span class="line">                        lateral_shift = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,643" id="srcline643"> 643</a></span><span class="line">                    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,644" id="srcline644"> 644</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,645" id="srcline645"> 645</a></span><span class="line">                    <span class="comment">% Based on the commanded roll angle, and lateral_shift,</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,646" id="srcline646"> 646</a></span><span class="line">                    <span class="comment">% decide the Leg Length Difference in right and left</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,647" id="srcline647"> 647</a></span><span class="line">                    <span class="comment">% leg.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,648" id="srcline648"> 648</a></span><span class="line">                    left_tune = - obj.s2*max([s_L; s_R]) * (obj.Kp_lateral_stand*(qroll - obj.roll_des_fil - (-lateral_shift))  + obj.Kd_lateral_stand*dqroll);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,649" id="srcline649"> 649</a></span><span class="line">                    right_tune = obj.s2*max([s_L; s_R]) * (obj.Kp_lateral_stand*(qroll - obj.roll_des_fil - (-lateral_shift)) + obj.Kd_lateral_stand*dqroll);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,650" id="srcline650"> 650</a></span><span class="line">                    <span class="comment">% Inverse kinematics</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,651" id="srcline651"> 651</a></span><span class="line">                    [qthigh_d_L, qknee_d_L ] = Inverse_Kinematics_p(obj.pitch_des_fil, min(obj.LL_des_fil + left_tune, 0.9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,652" id="srcline652"> 652</a></span><span class="line">                    [qthigh_d_R, qknee_d_R ] = Inverse_Kinematics_p(obj.pitch_des_fil, min(obj.LL_des_fil + right_tune, 0.9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,653" id="srcline653"> 653</a></span><span class="line">                    [dqthigh_d_L, dqknee_d_L] = Inverse_Kinematics_v(obj.pitch_des_fil, min(obj.LL_des_fil + left_tune, 0.9), 0, 0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,654" id="srcline654"> 654</a></span><span class="line">                    [dqthigh_d_R, dqknee_d_R] = Inverse_Kinematics_v(obj.pitch_des_fil, min(obj.LL_des_fil + right_tune, 0.9), 0, 0);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,655" id="srcline655"> 655</a></span><span class="line">                    y_thigh = [obj.h0_joint(3)-qthigh_d_L; obj.h0_joint(8)-qthigh_d_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,656" id="srcline656"> 656</a></span><span class="line">                    dy_thigh = [obj.dh0_joint(3)-dqthigh_d_L; obj.dh0_joint(8)-dqthigh_d_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,657" id="srcline657"> 657</a></span><span class="line">                    y_knee = [obj.h0_joint(4)-qknee_d_L; obj.h0_joint(9)-qknee_d_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,658" id="srcline658"> 658</a></span><span class="line">                    dy_knee = [obj.dh0_joint(4)-dqknee_d_L; obj.dh0_joint(9)-dqknee_d_R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,659" id="srcline659"> 659</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,660" id="srcline660"> 660</a></span><span class="line">                    <span class="comment">% calculate the torque ( except toe).</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,661" id="srcline661"> 661</a></span><span class="line">                    u([1,6]) = - (obj.Kp_abduction_stand*[obj.h0_joint(1)-obj.standing_abduction_offset; obj.h0_joint(6) - ( - obj.standing_abduction_offset)] + obj.Kd_abduction_stand*[obj.dh0_joint(1); obj.dh0_joint(6)]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,662" id="srcline662"> 662</a></span><span class="line">                    u([2,7]) = - (obj.Kp_rotation_stand*[obj.h0_joint(2);obj.h0_joint(7)] + obj.Kd_rotation_stand*[obj.dh0_joint(2);obj.dh0_joint(7)]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,663" id="srcline663"> 663</a></span><span class="line">                    u([3,8]) = - (obj.Kp_thigh_stand.*y_thigh + obj.Kd_thigh_stand.*dy_thigh);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,664" id="srcline664"> 664</a></span><span class="line">                    u([4,9]) = - (obj.Kp_knee_stand*y_knee + obj.Kd_knee_stand*dy_knee);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,665" id="srcline665"> 665</a></span><span class="line">                    <span class="comment">% calculate the toe torque</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,666" id="srcline666"> 666</a></span><span class="line">                    P_feedback_toe = ( com_pos(1) - obj.stand_offset- (r_foot_p(1)+l_foot_p(1))/2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,667" id="srcline667"> 667</a></span><span class="line">                    obj.P_feedback_toe_fil = YToolkits.first_order_filter(obj.P_feedback_toe_fil,P_feedback_toe,obj.fil_para_3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,668" id="srcline668"> 668</a></span><span class="line">                    u_toe = - (obj.Kp_toe_stand*obj.P_feedback_toe_fil + obj.Kd_toe_stand*( obj.com_vel_x_fil - 0));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,669" id="srcline669"> 669</a></span><span class="line">                    u([5,10]) =min(s_L,s_R)*u_toe;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,670" id="srcline670"> 670</a></span><span class="line">                    u([5,10]) = YToolkits.clamp(u([5,10]),-15,15);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,671" id="srcline671"> 671</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,672" id="srcline672"> 672</a></span><span class="line">                    <span class="comment">% from walking to stand ( to make torque smooth in transition)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,673" id="srcline673"> 673</a></span><span class="line">                    obj.t2 = (obj.t2 + (t - obj.t_prev));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,674" id="srcline674"> 674</a></span><span class="line">                    obj.s2 = min(obj.t2/obj.standing_switch_time,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,675" id="srcline675"> 675</a></span><span class="line">                    s2_b = [0,0,ones(1,20)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,676" id="srcline676"> 676</a></span><span class="line">                    switch_weight  = YToolkits.bezier(s2_b,obj.s2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,677" id="srcline677"> 677</a></span><span class="line">                    u = switch_weight*u + (1-switch_weight)*obj.u_last;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,678" id="srcline678"> 678</a></span><span class="line">                    </span></span>
+<span class="srcline"><span class="lineno"><a href="3,679" id="srcline679"> 679</a></span><span class="line">                    Data.LL_des_fil = obj.LL_des_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,680" id="srcline680"> 680</a></span><span class="line">                    Data.y_knee = y_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,681" id="srcline681"> 681</a></span><span class="line">                    Data.dy_knee = dy_knee;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,682" id="srcline682"> 682</a></span><span class="line">                    Data.qknee_d_L = qknee_d_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,683" id="srcline683"> 683</a></span><span class="line">                    Data.qknee_d_R = qknee_d_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,684" id="srcline684"> 684</a></span><span class="line">                    Data.left_tune = left_tune;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,685" id="srcline685"> 685</a></span><span class="line">                    Data.right_tune = right_tune;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,686" id="srcline686"> 686</a></span><span class="line">                <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,687" id="srcline687"> 687</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,688" id="srcline688"> 688</a></span><span class="line">                <span class="comment">%% log object properties</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,689" id="srcline689"> 689</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,690" id="srcline690"> 690</a></span><span class="line">                obj.t_prev = t;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,691" id="srcline691"> 691</a></span><span class="line">                obj.s_prev = s;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,692" id="srcline692"> 692</a></span><span class="line">                obj.s_unsat_prev = s_unsat;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,693" id="srcline693"> 693</a></span><span class="line">                obj.task_prev = obj.task;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,694" id="srcline694"> 694</a></span><span class="line">                obj.u_prev = u;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,695" id="srcline695"> 695</a></span><span class="line">                obj.hd_prev = obj.hd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,696" id="srcline696"> 696</a></span><span class="line">                obj.dhd_prev = obj.dhd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,697" id="srcline697"> 697</a></span><span class="line">                obj.h0_prev = obj.h0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,698" id="srcline698"> 698</a></span><span class="line">                obj.dh0_prev = obj.dh0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,699" id="srcline699"> 699</a></span><span class="line">                obj.y_prev = obj.y;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,700" id="srcline700"> 700</a></span><span class="line">                obj.dy_prev = obj.dy;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,701" id="srcline701"> 701</a></span><span class="line">                obj.hd_joint_prev = obj.hd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,702" id="srcline702"> 702</a></span><span class="line">                obj.dhd_joint_prev = obj.dhd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,703" id="srcline703"> 703</a></span><span class="line">                obj.h0_joint_prev = obj.h0_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,704" id="srcline704"> 704</a></span><span class="line">                obj.dh0_joint_prev = obj.dh0_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,705" id="srcline705"> 705</a></span><span class="line">                obj.y_joint_prev = obj.y_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,706" id="srcline706"> 706</a></span><span class="line">                obj.dy_joint_prev = obj.dy_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,707" id="srcline707"> 707</a></span><span class="line">                obj.to_turn_prev = obj.to_turn;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,708" id="srcline708"> 708</a></span><span class="line">                <span class="comment">%% Return                </span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,709" id="srcline709"> 709</a></span><span class="line">                userInputs.telemetry(1) = qsL(1)*1000;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,710" id="srcline710"> 710</a></span><span class="line">                userInputs.telemetry(2) = qsL(2)*1000;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,711" id="srcline711"> 711</a></span><span class="line">                userInputs.telemetry(3) = qsR(1)*1000;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,712" id="srcline712"> 712</a></span><span class="line">                userInputs.telemetry(4) = qsR(2)*1000;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,713" id="srcline713"> 713</a></span><span class="line">                userInputs.telemetry(5) = dqyaw*180/pi;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,714" id="srcline714"> 714</a></span><span class="line">                userInputs.telemetry(6) = u(5);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,715" id="srcline715"> 715</a></span><span class="line">                userInputs.telemetry(7) = u(10);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,716" id="srcline716"> 716</a></span><span class="line">                userInputs.telemetry(8) = GRF_v(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,717" id="srcline717"> 717</a></span><span class="line">                userInputs.telemetry(9) = GRF_v(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,718" id="srcline718"> 718</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,719" id="srcline719"> 719</a></span><span class="line">                u = YToolkits.vector_saturate(u,obj.safe_TorqueLimits,-obj.safe_TorqueLimits);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,720" id="srcline720"> 720</a></span><span class="line">                userInputs.torque = u;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,721" id="srcline721"> 721</a></span><span class="line">                <span class="comment">%% log Data</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,722" id="srcline722"> 722</a></span><span class="line">                Data.s = s;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,723" id="srcline723"> 723</a></span><span class="line">                Data.stanceLeg = obj.stanceLeg;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,724" id="srcline724"> 724</a></span><span class="line">                Data.task = obj.task;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,725" id="srcline725"> 725</a></span><span class="line">                Data.GRF = [GRF_L(2); GRF_R(2)];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,726" id="srcline726"> 726</a></span><span class="line">                Data.s_LR = s_LR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,727" id="srcline727"> 727</a></span><span class="line">                Data.tp_last = obj.tp_last;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,728" id="srcline728"> 728</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,729" id="srcline729"> 729</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,730" id="srcline730"> 730</a></span><span class="line">                Data.h0 = obj.h0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,731" id="srcline731"> 731</a></span><span class="line">                Data.dh0 = obj.dh0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,732" id="srcline732"> 732</a></span><span class="line">                Data.h0_joint = obj.h0_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,733" id="srcline733"> 733</a></span><span class="line">                Data.dh0_joint = obj.dh0_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,734" id="srcline734"> 734</a></span><span class="line">                Data.hd = obj.hd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,735" id="srcline735"> 735</a></span><span class="line">                Data.dhd = obj.dhd;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,736" id="srcline736"> 736</a></span><span class="line">                Data.hd_joint = obj.hd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,737" id="srcline737"> 737</a></span><span class="line">                Data.dhd_joint = obj.dhd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,738" id="srcline738"> 738</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,739" id="srcline739"> 739</a></span><span class="line">                Data.u = u;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,740" id="srcline740"> 740</a></span><span class="line">                Data.torso_angle = [qyaw; qpitch; qroll];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,741" id="srcline741"> 741</a></span><span class="line">                Data.d_torso_angle = [dqyaw; dqpitch; dqroll];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,742" id="srcline742"> 742</a></span><span class="line">                Data.torso_vx = dqx;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,743" id="srcline743"> 743</a></span><span class="line">                Data.torso_vy = dqy;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,744" id="srcline744"> 744</a></span><span class="line">                Data.torso_vz = dqz;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,745" id="srcline745"> 745</a></span><span class="line">                Data.torso_vx_b = dqx_b;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,746" id="srcline746"> 746</a></span><span class="line">                Data.torso_vy_b = dqy_b;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,747" id="srcline747"> 747</a></span><span class="line">                Data.torso_vz_b = dqz_b;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,748" id="srcline748"> 748</a></span><span class="line">                Data.torso_vx_fil = obj.dqx_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,749" id="srcline749"> 749</a></span><span class="line">                Data.torso_vy_fil = obj.dqy_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,750" id="srcline750"> 750</a></span><span class="line">                Data.torso_vz_fil = obj.dqz_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,751" id="srcline751"> 751</a></span><span class="line">                Data.torso_vx_b_fil = obj.dqx_b_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,752" id="srcline752"> 752</a></span><span class="line">                Data.torso_vy_b_fil = obj.dqy_b_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,753" id="srcline753"> 753</a></span><span class="line">                Data.torso_vz_b_fil = obj.dqz_b_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,754" id="srcline754"> 754</a></span><span class="line">                Data.com_vel_x_fil = obj.com_vel_x_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,755" id="srcline755"> 755</a></span><span class="line">                Data.com_vel_y_fil = obj.com_vel_y_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,756" id="srcline756"> 756</a></span><span class="line">                Data.com_vel_z_fil = obj.com_vel_z_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,757" id="srcline757"> 757</a></span><span class="line">                Data.com_pos_fil = [obj.com_vel_x_fil;obj.com_vel_y_fil;obj.com_vel_z_fil];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,758" id="srcline758"> 758</a></span><span class="line">                Data.tg_velocity_x = obj.tg_velocity_x;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,759" id="srcline759"> 759</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,760" id="srcline760"> 760</a></span><span class="line">                Data.r_foot_v = r_foot_v;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,761" id="srcline761"> 761</a></span><span class="line">                Data.l_foot_v = l_foot_v;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,762" id="srcline762"> 762</a></span><span class="line">                Data.r_foot_p = r_foot_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,763" id="srcline763"> 763</a></span><span class="line">                Data.l_foot_p = l_foot_p;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,764" id="srcline764"> 764</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,765" id="srcline765"> 765</a></span><span class="line">                Data.com_pos = com_pos;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,766" id="srcline766"> 766</a></span><span class="line">                Data.com_vel = com_vel;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,767" id="srcline767"> 767</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="3,768" id="srcline768"> 768</a></span><span class="line">                Data.encoder_fil = encoder_fil;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,769" id="srcline769"> 769</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,770" id="srcline770"> 770</a></span><span class="line">                Data.q_abduction_R = q_abduction_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,771" id="srcline771"> 771</a></span><span class="line">                Data.q_rotation_R = q_rotation_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,772" id="srcline772"> 772</a></span><span class="line">                Data.q_thigh_R = q_thigh_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,773" id="srcline773"> 773</a></span><span class="line">                Data.q_thigh_knee_R = q_thigh_knee_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,774" id="srcline774"> 774</a></span><span class="line">                Data.q_knee_shin_R = q_knee_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,775" id="srcline775"> 775</a></span><span class="line">                Data.q_thigh_shin_R = q_thigh_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,776" id="srcline776"> 776</a></span><span class="line">                Data.q_shin_tarsus_R = q_shin_tarsus_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,777" id="srcline777"> 777</a></span><span class="line">                Data.q_toe_R = q_toe_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,778" id="srcline778"> 778</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,779" id="srcline779"> 779</a></span><span class="line">                Data.q_abduction_L = q_abduction_L ;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,780" id="srcline780"> 780</a></span><span class="line">                Data.q_rotation_L = q_rotation_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,781" id="srcline781"> 781</a></span><span class="line">                Data.q_thigh_L = q_thigh_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,782" id="srcline782"> 782</a></span><span class="line">                Data.q_thigh_knee_L = q_thigh_knee_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,783" id="srcline783"> 783</a></span><span class="line">                Data.q_knee_shin_L = q_knee_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,784" id="srcline784"> 784</a></span><span class="line">                Data.q_thigh_shin_L = q_thigh_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,785" id="srcline785"> 785</a></span><span class="line">                Data.q_shin_tarsus_L = q_shin_tarsus_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,786" id="srcline786"> 786</a></span><span class="line">                Data.q_toe_L = q_toe_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,787" id="srcline787"> 787</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,788" id="srcline788"> 788</a></span><span class="line">                Data.dq_abduction_R = dq_abduction_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,789" id="srcline789"> 789</a></span><span class="line">                Data.dq_rotation_R = dq_rotation_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,790" id="srcline790"> 790</a></span><span class="line">                Data.dq_thigh_R = dq_thigh_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,791" id="srcline791"> 791</a></span><span class="line">                Data.dq_thigh_knee_R = dq_thigh_knee_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,792" id="srcline792"> 792</a></span><span class="line">                Data.dq_knee_shin_R = dq_knee_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,793" id="srcline793"> 793</a></span><span class="line">                Data.dq_thigh_shin_R = dq_thigh_shin_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,794" id="srcline794"> 794</a></span><span class="line">                Data.dq_shin_tarsus_R = dq_shin_tarsus_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,795" id="srcline795"> 795</a></span><span class="line">                Data.dq_toe_R = dq_toe_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,796" id="srcline796"> 796</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,797" id="srcline797"> 797</a></span><span class="line">                Data.dq_abduction_L = dq_abduction_L ;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,798" id="srcline798"> 798</a></span><span class="line">                Data.dq_rotation_L = dq_rotation_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,799" id="srcline799"> 799</a></span><span class="line">                Data.dq_thigh_L = dq_thigh_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,800" id="srcline800"> 800</a></span><span class="line">                Data.dq_thigh_knee_L = dq_thigh_knee_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,801" id="srcline801"> 801</a></span><span class="line">                Data.dq_knee_shin_L = dq_knee_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,802" id="srcline802"> 802</a></span><span class="line">                Data.dq_thigh_shin_L = dq_thigh_shin_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,803" id="srcline803"> 803</a></span><span class="line">                Data.dq_shin_tarsus_L = dq_shin_tarsus_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,804" id="srcline804"> 804</a></span><span class="line">                Data.dq_toe_L = dq_toe_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,805" id="srcline805"> 805</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,806" id="srcline806"> 806</a></span><span class="line">                Data.qall = qall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,807" id="srcline807"> 807</a></span><span class="line">                Data.dqall = dqall;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,808" id="srcline808"> 808</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,809" id="srcline809"> 809</a></span><span class="line">                Data.qq = qq;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,810" id="srcline810"> 810</a></span><span class="line">                Data.qaR = qaR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,811" id="srcline811"> 811</a></span><span class="line">                Data.qjR = qjR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,812" id="srcline812"> 812</a></span><span class="line">                Data.qsR = qsR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,813" id="srcline813"> 813</a></span><span class="line">                Data.qaL = qaL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,814" id="srcline814"> 814</a></span><span class="line">                Data.qjL = qjL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,815" id="srcline815"> 815</a></span><span class="line">                Data.qsL = qsL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,816" id="srcline816"> 816</a></span><span class="line">                </span></span>
+<span class="srcline"><span class="lineno"><a href="3,817" id="srcline817"> 817</a></span><span class="line">                Data.dqaR = dqaR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,818" id="srcline818"> 818</a></span><span class="line">                Data.dqjR = dqjR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,819" id="srcline819"> 819</a></span><span class="line">                Data.dqsR = dqsR;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,820" id="srcline820"> 820</a></span><span class="line">                Data.dqaL = dqaL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,821" id="srcline821"> 821</a></span><span class="line">                Data.dqjL = dqjL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,822" id="srcline822"> 822</a></span><span class="line">                Data.dqsL = dqsL;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,823" id="srcline823"> 823</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,824" id="srcline824"> 824</a></span><span class="line">            <span class="comment">% Return the updated Cassie inputs data structure</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,825" id="srcline825"> 825</a></span><span class="line">            </span></span>
+<span class="srcline"><span class="lineno"><a href="3,826" id="srcline826"> 826</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% stepImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,827" id="srcline827"> 827</a></span><span class="line">        <span class="comment">%% util functions</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,828" id="srcline828"> 828</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,829" id="srcline829"> 829</a></span><span class="line">        <span class="keyword">function</span> gaitparams = ControlPolicy( obj,GaitLibrary, phi)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,830" id="srcline830"> 830</a></span><span class="line">            <span class="comment">% Saturate interpolation value</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,831" id="srcline831"> 831</a></span><span class="line">            phi = clamp(phi, GaitLibrary.Velocity(1,1), GaitLibrary.Velocity(1,end));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,832" id="srcline832"> 832</a></span><span class="line">            <span class="comment">% Interpolate gaits</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,833" id="srcline833"> 833</a></span><span class="line">            HAlpha_R = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.RightStance.HAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,834" id="srcline834"> 834</a></span><span class="line">            HAlpha_L = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.LeftStance.HAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,835" id="srcline835"> 835</a></span><span class="line">            ct_R = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,836" id="srcline836"> 836</a></span><span class="line">            ct_L = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,837" id="srcline837"> 837</a></span><span class="line">            <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,838" id="srcline838"> 838</a></span><span class="line">                gaitparams.HAlpha = reshape(HAlpha_R,10,6);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,839" id="srcline839"> 839</a></span><span class="line">                gaitparams.HAlpha(:,1) = obj.hd_last;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,840" id="srcline840"> 840</a></span><span class="line">                gaitparams.HAlpha(:,2) = obj.hd_last + obj.dhd_last/ct_R/obj.bezier_degree;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,841" id="srcline841"> 841</a></span><span class="line">                gaitparams.ct = ct_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,842" id="srcline842"> 842</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,843" id="srcline843"> 843</a></span><span class="line">                gaitparams.HAlpha = reshape(HAlpha_L,10,6);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,844" id="srcline844"> 844</a></span><span class="line">                gaitparams.HAlpha(:,1) = obj.hd_last;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,845" id="srcline845"> 845</a></span><span class="line">                gaitparams.HAlpha(:,2) = obj.hd_last + obj.dhd_last/ct_L/obj.bezier_degree;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,846" id="srcline846"> 846</a></span><span class="line">                gaitparams.ct = ct_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,847" id="srcline847"> 847</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,848" id="srcline848"> 848</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,849" id="srcline849"> 849</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,850" id="srcline850"> 850</a></span><span class="line">        <span class="keyword">function</span> COMparams = ControlPolicy_COM( obj,GaitLibrary, phi)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,851" id="srcline851"> 851</a></span><span class="line">            <span class="comment">% Saturate interpolation value</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,852" id="srcline852"> 852</a></span><span class="line">            phi = clamp(phi, GaitLibrary.Velocity(1,1), GaitLibrary.Velocity(1,end));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,853" id="srcline853"> 853</a></span><span class="line">            <span class="comment">% Interpolate gaits</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,854" id="srcline854"> 854</a></span><span class="line">            HAlpha_R = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.RightStance.ComPositionAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,855" id="srcline855"> 855</a></span><span class="line">            HAlpha_L = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.LeftStance.ComPositionAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,856" id="srcline856"> 856</a></span><span class="line">            ct_R = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,857" id="srcline857"> 857</a></span><span class="line">            ct_L = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,858" id="srcline858"> 858</a></span><span class="line">            <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,859" id="srcline859"> 859</a></span><span class="line">                COMparams.HAlpha = reshape(HAlpha_R,3,12);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,860" id="srcline860"> 860</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,1) = obj.comd_last;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,861" id="srcline861"> 861</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,2) = obj.comd_last + obj.dcomd_last/ct_R/11;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,862" id="srcline862"> 862</a></span><span class="line">                COMparams.ct = ct_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,863" id="srcline863"> 863</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,864" id="srcline864"> 864</a></span><span class="line">                COMparams.HAlpha = reshape(HAlpha_L,3,12);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,865" id="srcline865"> 865</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,1) = obj.comd_last;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,866" id="srcline866"> 866</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,2) = obj.comd_last + obj.dcomd_last/ct_L/11;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,867" id="srcline867"> 867</a></span><span class="line">                COMparams.ct = ct_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,868" id="srcline868"> 868</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,869" id="srcline869"> 869</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,870" id="srcline870"> 870</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,871" id="srcline871"> 871</a></span><span class="line">        <span class="keyword">function</span> SWparams = ControlPolicy_Swing( obj,GaitLibrary, phi)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,872" id="srcline872"> 872</a></span><span class="line">            <span class="comment">% Saturate interpolation value</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,873" id="srcline873"> 873</a></span><span class="line">            phi = clamp(phi, GaitLibrary.Velocity(1,1), GaitLibrary.Velocity(1,end));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,874" id="srcline874"> 874</a></span><span class="line">            <span class="comment">% Interpolate gaits</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,875" id="srcline875"> 875</a></span><span class="line">            HAlpha_R = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.RightStance.SwingAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,876" id="srcline876"> 876</a></span><span class="line">            HAlpha_L = interp1(GaitLibrary.Velocity(1,:),GaitLibrary.LeftStance.SwingAlpha, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,877" id="srcline877"> 877</a></span><span class="line">            ct_R = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,878" id="srcline878"> 878</a></span><span class="line">            ct_L = interp1(GaitLibrary.Velocity(1,:), GaitLibrary.ct, phi);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,879" id="srcline879"> 879</a></span><span class="line">            <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,880" id="srcline880"> 880</a></span><span class="line">                SWparams.HAlpha = reshape(HAlpha_R,3,12);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,881" id="srcline881"> 881</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,1) = obj.comd_last;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,882" id="srcline882"> 882</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,2) = obj.comd_last + obj.dcomd_last/ct_R/11;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,883" id="srcline883"> 883</a></span><span class="line">                SWparams.ct = ct_R;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,884" id="srcline884"> 884</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,885" id="srcline885"> 885</a></span><span class="line">                SWparams.HAlpha = reshape(HAlpha_L,3,12);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,886" id="srcline886"> 886</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,1) = obj.comd_last;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,887" id="srcline887"> 887</a></span><span class="line">                <span class="comment">%                 COMparams.HAlpha(:,2) = obj.comd_last + obj.dcomd_last/ct_L/11;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,888" id="srcline888"> 888</a></span><span class="line">                SWparams.ct = ct_L;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,889" id="srcline889"> 889</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,890" id="srcline890"> 890</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,891" id="srcline891"> 891</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,892" id="srcline892"> 892</a></span><span class="line">        <span class="keyword">function</span> [dqx,dqy,dqz] = get_velocity_v3(obj,q,dq)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,893" id="srcline893"> 893</a></span><span class="line">            <span class="keyword">if</span> obj.stanceLeg == 1</span></span>
+<span class="srcline"><span class="lineno"><a href="3,894" id="srcline894"> 894</a></span><span class="line">                range = 14:20;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,895" id="srcline895"> 895</a></span><span class="line">                J = J_RightToeBottomBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,896" id="srcline896"> 896</a></span><span class="line">            <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,897" id="srcline897"> 897</a></span><span class="line">                J = J_LeftToeBottomBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,898" id="srcline898"> 898</a></span><span class="line">                range = 7:13;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,899" id="srcline899"> 899</a></span><span class="line">            <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,900" id="srcline900"> 900</a></span><span class="line">            v_torso = (-J(:,1:3)^-1)*(J(:,4:6)*dq(4:6)+J(:,range)*dq(range));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,901" id="srcline901"> 901</a></span><span class="line">            dqx = v_torso(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,902" id="srcline902"> 902</a></span><span class="line">            dqy = v_torso(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,903" id="srcline903"> 903</a></span><span class="line">            dqz = v_torso(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,904" id="srcline904"> 904</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,905" id="srcline905"> 905</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,906" id="srcline906"> 906</a></span><span class="line">        <span class="keyword">function</span> [ GRF_L, GRF_R  ] = get_GRF(obj,qall,qsR,qsL,u)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,907" id="srcline907"> 907</a></span><span class="line">            qall(4) = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,908" id="srcline908"> 908</a></span><span class="line">            JR = J_RightToeJoint(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,909" id="srcline909"> 909</a></span><span class="line">            JL = J_LeftToeJoint(qall);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,910" id="srcline910"> 910</a></span><span class="line">            [Fs1R, Fs2R, Fs1L, Fs2L] = get_spring_force(obj,qsR,qsL);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,911" id="srcline911"> 911</a></span><span class="line">            JR_s = JR([1,3],[18,19]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,912" id="srcline912"> 912</a></span><span class="line">            JL_s = JL([1,3],[11,12]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,913" id="srcline913"> 913</a></span><span class="line">            GRF_R = (-JR_s')^-1*[Fs1R+Fs2R; Fs2R];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,914" id="srcline914"> 914</a></span><span class="line">            GRF_L = (-JL_s')^-1*[Fs1L+Fs2L; Fs2L];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,915" id="srcline915"> 915</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,916" id="srcline916"> 916</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,917" id="srcline917"> 917</a></span><span class="line">        <span class="keyword">function</span> [Fs1R, Fs2R, Fs1L, Fs2L] = get_spring_force(obj,qsR,qsL)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,918" id="srcline918"> 918</a></span><span class="line">            Fs1R =- obj.Ks1 * qsR(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,919" id="srcline919"> 919</a></span><span class="line">            Fs2R =- obj.Ks2 * qsR(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,920" id="srcline920"> 920</a></span><span class="line">            Fs1L =- obj.Ks1 * qsL(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,921" id="srcline921"> 921</a></span><span class="line">            Fs2L =- obj.Ks2 * qsL(2);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,922" id="srcline922"> 922</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,923" id="srcline923"> 923</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,924" id="srcline924"> 924</a></span><span class="line">        <span class="keyword">function</span> [s_L, s_R] = get_s_LR(obj, GRF_v)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,925" id="srcline925"> 925</a></span><span class="line">            s_L = (GRF_v(1)-obj.stance_thre_lb)/(obj.stance_thre_ub-obj.stance_thre_lb);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,926" id="srcline926"> 926</a></span><span class="line">            s_R = (GRF_v(2)-obj.stance_thre_lb)/(obj.stance_thre_ub-obj.stance_thre_lb);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,927" id="srcline927"> 927</a></span><span class="line">            s_L = median([0,1,s_L ]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,928" id="srcline928"> 928</a></span><span class="line">            s_R = median([0,1,s_R]);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,929" id="srcline929"> 929</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,930" id="srcline930"> 930</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,931" id="srcline931"> 931</a></span><span class="line">       </span></span>
+<span class="srcline"><span class="lineno"><a href="3,932" id="srcline932"> 932</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,933" id="srcline933"> 933</a></span><span class="line">        <span class="keyword">function</span> [ hd_output, dhd_output] = get_FK(obj, hd_joint,dhd_joint)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,934" id="srcline934"> 934</a></span><span class="line">            [ hd_output, dhd_output] = get_FK_v1(obj, hd_joint,dhd_joint);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,935" id="srcline935"> 935</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,936" id="srcline936"> 936</a></span><span class="line">        <span class="keyword">function</span> [ hd_joint, dhd_joint] = get_IK(obj, hd_output,dhd_output)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,937" id="srcline937"> 937</a></span><span class="line">            [ hd_joint, dhd_joint] = get_IK_v1(obj, hd_output,dhd_output);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,938" id="srcline938"> 938</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,939" id="srcline939"> 939</a></span><span class="line">        <span class="keyword">function</span> [ hd_joint, dhd_joint] = get_IK_v1(obj, hd_output,dhd_output)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,940" id="srcline940"> 940</a></span><span class="line">            hd_joint = hd_output;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,941" id="srcline941"> 941</a></span><span class="line">            dhd_joint = dhd_output;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,942" id="srcline942"> 942</a></span><span class="line">            hd_output(4) = min(hd_output(4),1.02);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,943" id="srcline943"> 943</a></span><span class="line">            hd_output(9) = min(hd_output(9),1.02);</span></span>
+<span class="srcline"><span class="lineno"><a href="3,944" id="srcline944"> 944</a></span><span class="line">            [hd_joint(3), hd_joint(4)] = Inverse_Kinematics_p(hd_output(3), hd_output(4));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,945" id="srcline945"> 945</a></span><span class="line">            [hd_joint(8), hd_joint(9)] = Inverse_Kinematics_p(hd_output(8), hd_output(9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,946" id="srcline946"> 946</a></span><span class="line">            [dhd_joint(3), dhd_joint(4)] = Inverse_Kinematics_v(hd_output(3), hd_output(4), dhd_output(3), dhd_output(4));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,947" id="srcline947"> 947</a></span><span class="line">            [dhd_joint(8), dhd_joint(9)] = Inverse_Kinematics_v(hd_output(8), hd_output(9), dhd_output(8), dhd_output(9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,948" id="srcline948"> 948</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,949" id="srcline949"> 949</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,950" id="srcline950"> 950</a></span><span class="line">        <span class="keyword">function</span> [ hd_output, dhd_output] = get_FK_v1(obj, hd_joint,dhd_joint)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,951" id="srcline951"> 951</a></span><span class="line">            hd_output = hd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,952" id="srcline952"> 952</a></span><span class="line">            dhd_output = dhd_joint;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,953" id="srcline953"> 953</a></span><span class="line">            [hd_output(3), hd_output(4)] = Forward_Kinematics_p(hd_joint(3), hd_joint(4));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,954" id="srcline954"> 954</a></span><span class="line">            [hd_output(8), hd_output(9)] = Forward_Kinematics_p(hd_joint(8), hd_joint(9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,955" id="srcline955"> 955</a></span><span class="line">            [dhd_output(3), dhd_output(4)] = Forward_Kinematics_v(hd_joint(3), hd_joint(4), dhd_joint(3), dhd_joint(4));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,956" id="srcline956"> 956</a></span><span class="line">            [dhd_output(8), dhd_output(9)] = Forward_Kinematics_v(hd_joint(8), hd_joint(9), dhd_joint(8), dhd_joint(9));</span></span>
+<span class="srcline"><span class="lineno"><a href="3,957" id="srcline957"> 957</a></span><span class="line">        <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,958" id="srcline958"> 958</a></span><span class="line">        <span class="comment">%% Default functions</span></span></span>
+</pre>
+</div>
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="3,959" id="srcline959"> 959</a></span><span class="line">        <span class="keyword">function</span> setupImpl(<span class="var type1" id="S499T60U5984">obj</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,960" id="srcline960"> 960</a></span><span class="line">            <span class="comment">%SETUPIMPL Initialize System object.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,961" id="srcline961"> 961</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% setupImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,962" id="srcline962"> 962</a></span><span class="line">        </span></span>
+</pre>
+<div class="dead">
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="3,963" id="srcline963"> 963</a></span><span class="line">        <span class="keyword">function</span> resetImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,964" id="srcline964"> 964</a></span><span class="line">            <span class="comment">%RESETIMPL Reset System object states.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,965" id="srcline965"> 965</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% resetImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,966" id="srcline966"> 966</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,967" id="srcline967"> 967</a></span><span class="line">        <span class="keyword">function</span> [name_1, name_2, name_3, name_4, name_5, name_6]  = getInputNamesImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,968" id="srcline968"> 968</a></span><span class="line">            <span class="comment">%GETINPUTNAMESIMPL Return input port names for System block</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,969" id="srcline969"> 969</a></span><span class="line">            name_1 = <span class="string">'t'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,970" id="srcline970"> 970</a></span><span class="line">            name_2 = <span class="string">'cassieOutputs'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,971" id="srcline971"> 971</a></span><span class="line">            name_3 = <span class="string">'isSim'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,972" id="srcline972"> 972</a></span><span class="line">            name_4 = <span class="string">'GaitLibrary'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,973" id="srcline973"> 973</a></span><span class="line">            name_5 = <span class="string">'encoder_fil'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,974" id="srcline974"> 974</a></span><span class="line">            name_6 = <span class="string">'state'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,975" id="srcline975"> 975</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% getInputNamesImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,976" id="srcline976"> 976</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,977" id="srcline977"> 977</a></span><span class="line">        <span class="keyword">function</span> [name_1, name_2] = getOutputNamesImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,978" id="srcline978"> 978</a></span><span class="line">            <span class="comment">%GETOUTPUTNAMESIMPL Return output port names for System block</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,979" id="srcline979"> 979</a></span><span class="line">            name_1 = <span class="string">'userInputs'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,980" id="srcline980"> 980</a></span><span class="line">            name_2 = <span class="string">'Data'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,981" id="srcline981"> 981</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% getOutputNamesImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,982" id="srcline982"> 982</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,983" id="srcline983"> 983</a></span><span class="line">        <span class="comment">% PROPAGATES CLASS METHODS ============================================</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,984" id="srcline984"> 984</a></span><span class="line">        <span class="keyword">function</span> [out, Data] = getOutputSizeImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,985" id="srcline985"> 985</a></span><span class="line">            <span class="comment">%GETOUTPUTSIZEIMPL Get sizes of output ports.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,986" id="srcline986"> 986</a></span><span class="line">            out = [1, 1];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,987" id="srcline987"> 987</a></span><span class="line">            Data = [1, 1];</span></span>
+<span class="srcline"><span class="lineno"><a href="3,988" id="srcline988"> 988</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% getOutputSizeImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,989" id="srcline989"> 989</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,990" id="srcline990"> 990</a></span><span class="line">        <span class="keyword">function</span> [out, Data] = getOutputDataTypeImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,991" id="srcline991"> 991</a></span><span class="line">            <span class="comment">%GETOUTPUTDATATYPEIMPL Get data types of output ports.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,992" id="srcline992"> 992</a></span><span class="line">            out = <span class="string">'CassieUserInBus'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,993" id="srcline993"> 993</a></span><span class="line">            Data = <span class="string">'cassieDataBus'</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,994" id="srcline994"> 994</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% getOutputDataTypeImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,995" id="srcline995"> 995</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,996" id="srcline996"> 996</a></span><span class="line">        <span class="keyword">function</span> [out, Data] = isOutputComplexImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,997" id="srcline997"> 997</a></span><span class="line">            <span class="comment">%ISOUTPUTCOMPLEXIMPL Complexity of output ports.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,998" id="srcline998"> 998</a></span><span class="line">            out = false;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,999" id="srcline999"> 999</a></span><span class="line">            Data = false;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,1000" id="srcline1000">1000</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% isOutputComplexImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,1001" id="srcline1001">1001</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="3,1002" id="srcline1002">1002</a></span><span class="line">        <span class="keyword">function</span> [out, Data] = isOutputFixedSizeImpl(~)</span></span>
+<span class="srcline"><span class="lineno"><a href="3,1003" id="srcline1003">1003</a></span><span class="line">            <span class="comment">%ISOUTPUTFIXEDSIZEIMPL Fixed-size or variable-size output ports.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,1004" id="srcline1004">1004</a></span><span class="line">            out = true;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,1005" id="srcline1005">1005</a></span><span class="line">            Data = true;</span></span>
+<span class="srcline"><span class="lineno"><a href="3,1006" id="srcline1006">1006</a></span><span class="line">        <span class="keyword">end</span> <span class="comment">% isOutputFixedSizeImpl</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,1007" id="srcline1007">1007</a></span><span class="line">    <span class="keyword">end</span> <span class="comment">% methods</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,1008" id="srcline1008">1008</a></span><span class="line"><span class="keyword">end</span> <span class="comment">% classdef</span></span></span>
+<span class="srcline"><span class="lineno"><a href="3,1009" id="srcline1009">1009</a></span><span class="line"> </span></span>
+</pre>
+</div>
+</body>
+</html>

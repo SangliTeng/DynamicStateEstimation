@@ -1,0 +1,184 @@
+<!-- saved from url=(0014)about:internet -->
+<html>
+<body>
+<script src="resources/eml_report_loadable_data.js"></script>
+<div class="dead">
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="27,1" id="srcline1">  1</a></span><span class="line">function [u] = WBC_cone_v3(q,dq,stanceLeg,d2x1_des,err1,derr1,d2x2_des,err2,derr2,d2x3_des,err3,derr3)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,2" id="srcline2">  2</a></span><span class="line"><span class="comment">%% get body dynamics matrix</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,3" id="srcline3">  3</a></span><span class="line">M = perm_right(perm_left(De(q)));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,4" id="srcline4">  4</a></span><span class="line">H = perm_right(perm_left(Ce(q,dq)*dq + Ge(q)));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,5" id="srcline5">  5</a></span><span class="line"><span class="comment">% % H = Gmap'*(Ge_cassie(q));</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,6" id="srcline6">  6</a></span><span class="line"><span class="comment">%% get foot Jacobian</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,7" id="srcline7">  7</a></span><span class="line">if stanceLeg == 1<span class="comment">% right stance leg</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,8" id="srcline8">  8</a></span><span class="line">    vel_3 = Jp_LeftToeFront(q)*dq;vel_3(3) =0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,9" id="srcline9">  9</a></span><span class="line">    vel_4 = Jp_LeftToeBack(q)*dq;vel_4(3) =0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,10" id="srcline10"> 10</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,11" id="srcline11"> 11</a></span><span class="line">    J3 = perm_right(Jp_LeftToeFront(q));<span class="comment">%*Gmap;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,12" id="srcline12"> 12</a></span><span class="line">    J4 =  perm_right(Jp_LeftToeBack(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,13" id="srcline13"> 13</a></span><span class="line">    J1 =  perm_right(Jp_RightToeFront(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,14" id="srcline14"> 14</a></span><span class="line">    J2 =  perm_right(Jp_RightToeBack(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,15" id="srcline15"> 15</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,16" id="srcline16"> 16</a></span><span class="line">    J3z = J3(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,17" id="srcline17"> 17</a></span><span class="line">    J4z = J4(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,18" id="srcline18"> 18</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,19" id="srcline19"> 19</a></span><span class="line">    dJ3 =  perm_right(dJp_LeftToeFront(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,20" id="srcline20"> 20</a></span><span class="line">    dJ4 =  perm_right(dJp_LeftToeBack(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,21" id="srcline21"> 21</a></span><span class="line">    dJ1 =  perm_right(dJp_RightToeFront(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,22" id="srcline22"> 22</a></span><span class="line">    dJ2 =  perm_right(dJp_RightToeBack(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,23" id="srcline23"> 23</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,24" id="srcline24"> 24</a></span><span class="line">    dJ3z = dJ3(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,25" id="srcline25"> 25</a></span><span class="line">    dJ4z = dJ4(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,26" id="srcline26"> 26</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,27" id="srcline27"> 27</a></span><span class="line">    Jsw =  perm_right(Jp_LeftToeBottom(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,28" id="srcline28"> 28</a></span><span class="line">    dJsw =  perm_right(dJp_LeftToeBottom(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,29" id="srcline29"> 29</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,30" id="srcline30"> 30</a></span><span class="line">    Jst =  perm_right(Jp_RightToeBottom(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,31" id="srcline31"> 31</a></span><span class="line">    dJst =  perm_right(dJp_RightToeBottom(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,32" id="srcline32"> 32</a></span><span class="line">else</span></span>
+<span class="srcline"><span class="lineno"><a href="27,33" id="srcline33"> 33</a></span><span class="line">    vel_3 = Jp_RightToeFront(q)*dq; vel_3(3) = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,34" id="srcline34"> 34</a></span><span class="line">    vel_4 = Jp_RightToeBack(q)*dq; vel_4(3) = 0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,35" id="srcline35"> 35</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,36" id="srcline36"> 36</a></span><span class="line">    J1 =  perm_right(Jp_LeftToeFront(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,37" id="srcline37"> 37</a></span><span class="line">    J2 =  perm_right(Jp_LeftToeBack(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,38" id="srcline38"> 38</a></span><span class="line">    J3 =  perm_right(Jp_RightToeFront(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,39" id="srcline39"> 39</a></span><span class="line">    J4 =  perm_right(Jp_RightToeBack(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,40" id="srcline40"> 40</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,41" id="srcline41"> 41</a></span><span class="line">    J3z = J3(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,42" id="srcline42"> 42</a></span><span class="line">    J4z = J4(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,43" id="srcline43"> 43</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,44" id="srcline44"> 44</a></span><span class="line">    dJ1 =  perm_right(dJp_LeftToeFront(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,45" id="srcline45"> 45</a></span><span class="line">    dJ2 =  perm_right(dJp_LeftToeBack(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,46" id="srcline46"> 46</a></span><span class="line">    dJ3 =  perm_right(dJp_RightToeFront(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,47" id="srcline47"> 47</a></span><span class="line">    dJ4 =  perm_right(dJp_RightToeBack(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,48" id="srcline48"> 48</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,49" id="srcline49"> 49</a></span><span class="line">    dJ3z = dJ3(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,50" id="srcline50"> 50</a></span><span class="line">    dJ4z = dJ4(3,:);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,51" id="srcline51"> 51</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,52" id="srcline52"> 52</a></span><span class="line">    Jsw =  perm_right(Jp_RightToeBottom(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,53" id="srcline53"> 53</a></span><span class="line">    dJsw =  perm_right(dJp_RightToeBottom(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,54" id="srcline54"> 54</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="27,55" id="srcline55"> 55</a></span><span class="line">    Jst =  perm_right(Jp_LeftToeBottom(q));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,56" id="srcline56"> 56</a></span><span class="line">    dJst =  perm_right(dJp_LeftToeBottom(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,57" id="srcline57"> 57</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,58" id="srcline58"> 58</a></span><span class="line">vel_1 = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,59" id="srcline59"> 59</a></span><span class="line">vel_2 = zeros(3,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,60" id="srcline60"> 60</a></span><span class="line"><span class="comment">%% task 1</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,61" id="srcline61"> 61</a></span><span class="line">J_sw_xy = Jsw(1:2,:)*0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,62" id="srcline62"> 62</a></span><span class="line">dJ_sw_xy = dJsw(1:2,:)*0;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,63" id="srcline63"> 63</a></span><span class="line">kp1 = [1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,64" id="srcline64"> 64</a></span><span class="line">kd1 = [1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,65" id="srcline65"> 65</a></span><span class="line"><span class="comment">%% task 2 </span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,66" id="srcline66"> 66</a></span><span class="line"><span class="comment">% we control the COM or just the base link?</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,67" id="srcline67"> 67</a></span><span class="line">J_torso_xyz =  perm_right(Jcom_cassie(q));<span class="comment">%zeros(3,16);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,68" id="srcline68"> 68</a></span><span class="line">J_torso_xyz = (J_torso_xyz - Jst);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,69" id="srcline69"> 69</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,70" id="srcline70"> 70</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,71" id="srcline71"> 71</a></span><span class="line">dJ_torso_xyz =  perm_right(dJcom_cassie(q,dq));</span></span>
+<span class="srcline"><span class="lineno"><a href="27,72" id="srcline72"> 72</a></span><span class="line">dJ_torso_xyz = (dJ_torso_xyz - dJst);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,73" id="srcline73"> 73</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,74" id="srcline74"> 74</a></span><span class="line">kp2 = [1,1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,75" id="srcline75"> 75</a></span><span class="line">kd2 = [1,1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,76" id="srcline76"> 76</a></span><span class="line"><span class="comment">%% task 3</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,77" id="srcline77"> 77</a></span><span class="line">J_torso_ypr = zeros(3,16);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,78" id="srcline78"> 78</a></span><span class="line">J_torso_ypr(1:3,4:6) = eye(3);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,79" id="srcline79"> 79</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,80" id="srcline80"> 80</a></span><span class="line">dJ_torso_ypr = zeros(3,16);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,81" id="srcline81"> 81</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,82" id="srcline82"> 82</a></span><span class="line">kp3 = [1,1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,83" id="srcline83"> 83</a></span><span class="line">kd3 = [1,1,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,84" id="srcline84"> 84</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,85" id="srcline85"> 85</a></span><span class="line">Q1 = [1,1]*1;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,86" id="srcline86"> 86</a></span><span class="line">Q2 = [1,1,4]*1;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,87" id="srcline87"> 87</a></span><span class="line">Q3 = [1,1,1]*1;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,88" id="srcline88"> 88</a></span><span class="line">Q4 = ones(10,1)*0.1;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,89" id="srcline89"> 89</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,90" id="srcline90"> 90</a></span><span class="line">alpha_5 = 1e-3;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,91" id="srcline91"> 91</a></span><span class="line">Q5_1 = [1,1,1]*alpha_5;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,92" id="srcline92"> 92</a></span><span class="line">Q5_2 = [1,1,1]*alpha_5;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,93" id="srcline93"> 93</a></span><span class="line">Q5_3 = [1,1,1]*alpha_5;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,94" id="srcline94"> 94</a></span><span class="line">Q5_4 = [1,1,1]*alpha_5;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,95" id="srcline95"> 95</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,96" id="srcline96"> 96</a></span><span class="line"><span class="comment">% % output = optWBC_cone_v3(q,dq,M,H,S,J1,J2,J3,J4,dJ1,dJ2,dJ3,dJ4,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,97" id="srcline97"> 97</a></span><span class="line"><span class="comment">% %     J3z,J4z,dJ3z,dJ4z,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,98" id="srcline98"> 98</a></span><span class="line"><span class="comment">% %     J_sw_xy,dJ_sw_xy,kp1,kd1,d2x1_des,err1,derr1,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,99" id="srcline99"> 99</a></span><span class="line"><span class="comment">% %     J_torso_xyz,dJ_torso_xyz,kp2,kd2,d2x2_des,err2,derr2,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,100" id="srcline100">100</a></span><span class="line"><span class="comment">% %     J_torso_ypr,dJ_torso_ypr,kp3,kd3,d2x3_des,err3,derr3,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,101" id="srcline101">101</a></span><span class="line"><span class="comment">% %     Q1,Q2,Q3,Q4,Q5_1,Q5_2,Q5_3,Q5_4,...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,102" id="srcline102">102</a></span><span class="line"><span class="comment">% %     vel_1,vel_2,vel_3,vel_4);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,103" id="srcline103">103</a></span><span class="line"><span class="comment">% % u = output.tau;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,104" id="srcline104">104</a></span><span class="line">u = zeros(10,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,105" id="srcline105">105</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,106" id="srcline106">106</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,107" id="srcline107">107</a></span><span class="line">function mat = skew(x)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,108" id="srcline108">108</a></span><span class="line">mat = [0,-x(3),x(2);...</span></span>
+<span class="srcline"><span class="lineno"><a href="27,109" id="srcline109">109</a></span><span class="line">    x(3),0,-x(1);...</span></span>
+<span class="srcline"><span class="lineno"><a href="27,110" id="srcline110">110</a></span><span class="line">    -x(2),x(1),0 ];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,111" id="srcline111">111</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,112" id="srcline112">112</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,113" id="srcline113">113</a></span><span class="line">function [J1, J2, J3, J4, J5, J6] = getFootJacobians(q)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,114" id="srcline114">114</a></span><span class="line">J1 = Jp_LeftToeFront(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,115" id="srcline115">115</a></span><span class="line">J2 = Jp_LeftToeBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,116" id="srcline116">116</a></span><span class="line">J3 = Jp_RightToeFront(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,117" id="srcline117">117</a></span><span class="line">J4 = Jp_RightToeBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,118" id="srcline118">118</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,119" id="srcline119">119</a></span><span class="line">J5 = Jp_LeftToeBottom(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,120" id="srcline120">120</a></span><span class="line">J6 = Jp_RightToeBottom(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,121" id="srcline121">121</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,122" id="srcline122">122</a></span><span class="line"><span class="comment">%     G_ = zeros(7,5);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,123" id="srcline123">123</a></span><span class="line"><span class="comment">%     G_(1:4,1:4) = eye(4);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,124" id="srcline124">124</a></span><span class="line"><span class="comment">%     G_(6,4) = -1;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,125" id="srcline125">125</a></span><span class="line"><span class="comment">%     G_(7,5) = 1;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,126" id="srcline126">126</a></span><span class="line"><span class="comment">%     G_ = [G_,zeros(7,5);zeros(7,5),G_];</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,127" id="srcline127">127</a></span><span class="line"><span class="comment">%     G = zeros(20,16);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,128" id="srcline128">128</a></span><span class="line"><span class="comment">%     G(1:6,1:6) = eye(6);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,129" id="srcline129">129</a></span><span class="line"><span class="comment">%     G(7:end,7:end) = G_;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,130" id="srcline130">130</a></span><span class="line">G = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,-1,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,131" id="srcline131">131</a></span><span class="line">J1 = J1*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,132" id="srcline132">132</a></span><span class="line">J2 = J2*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,133" id="srcline133">133</a></span><span class="line">J3 = J3*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,134" id="srcline134">134</a></span><span class="line">J4 = J4*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,135" id="srcline135">135</a></span><span class="line">J5 = J5*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,136" id="srcline136">136</a></span><span class="line">J6 = J6*G;</span></span>
+<span class="srcline"><span class="lineno"><a href="27,137" id="srcline137">137</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,138" id="srcline138">138</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,139" id="srcline139">139</a></span><span class="line">function [P1,P2,P3,P4,P5,P6] = getFootPosition(q)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,140" id="srcline140">140</a></span><span class="line">P1 = p_LeftToeFront(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,141" id="srcline141">141</a></span><span class="line">P2 = p_LeftToeBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,142" id="srcline142">142</a></span><span class="line">P3 = p_RightToeFront(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,143" id="srcline143">143</a></span><span class="line">P4 = p_RightToeBack(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,144" id="srcline144">144</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,145" id="srcline145">145</a></span><span class="line">P5 = p_LeftToeBottom(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,146" id="srcline146">146</a></span><span class="line">P6 = p_RightToeBottom(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,147" id="srcline147">147</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,148" id="srcline148">148</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,149" id="srcline149">149</a></span><span class="line">function P_COM = getCOMPosition(q)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,150" id="srcline150">150</a></span><span class="line">P_COM = ComPosition(q);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,151" id="srcline151">151</a></span><span class="line">P_COM = reshape(P_COM,[3,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,152" id="srcline152">152</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,153" id="srcline153">153</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,154" id="srcline154">154</a></span><span class="line">function v_COM = getCOMVelocity(q,dq)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,155" id="srcline155">155</a></span><span class="line">v_COM = ComVelocity(q,dq);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,156" id="srcline156">156</a></span><span class="line">v_COM = reshape(v_COM,[3,1]);</span></span>
+<span class="srcline"><span class="lineno"><a href="27,157" id="srcline157">157</a></span><span class="line">end</span></span>
+</pre>
+</div>
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="27,158" id="srcline158">158</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="27,159" id="srcline159">159</a></span><span class="line"><span class="keyword">function</span> <span class="var type0" id="S124T0U1157">mat_out</span> = perm_right(<span class="var type1" id="S125T66U1160">mat_in</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,160" id="srcline160">160</a></span><span class="line">    <span class="var type0" id="S124T0U1163">mat_out</span> = [<span class="mxinfo " id="T67:U2"><span class="var type1" id="S125T66U1167">mat_in</span>(<span class="mxinfo " id="T68:U4">:</span>,<span class="mxinfo " id="T69:U5"><span class="mxinfo " id="T1:U6">1</span>:<span class="mxinfo " id="T1:U7">6</span></span>)</span>,<span class="mxinfo " id="T70:U8"><span class="var type1" id="S125T66U1173">mat_in</span>(<span class="mxinfo " id="T68:U10">:</span>,<span class="mxinfo " id="T24:U11"><span class="mxinfo " id="T1:U12">7</span>:<span class="mxinfo " id="T1:U13">10</span></span>)</span>,<span class="var type1" id="S125T66U1180">mat_in</span>(<span class="mxinfo " id="T68:U15">:</span>,<span class="mxinfo " id="T1:U16"><span class="message error" id="M1F271C">10</span></span>)-<span class="var type0" id="S125T0U1184">mat_in</span>(:,12),<span class="var type0" id="S125T0U1188">mat_in</span>(:,13),<span class="keyword">...</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,161" id="srcline161">161</a></span><span class="line">                             <span class="var type0" id="S125T0U1192">mat_in</span>(:,14:16),<span class="var type0" id="S125T0U1199">mat_in</span>(:,17)-<span class="var type0" id="S125T0U1203">mat_in</span>(:,19),<span class="var type0" id="S125T0U1207">mat_in</span>(:,20)];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,162" id="srcline162">162</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="27,163" id="srcline163">163</a></span><span class="line"></span></span>
+</pre>
+<div class="dead">
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="27,164" id="srcline164">164</a></span><span class="line">function mat_out = perm_left(mat_in)</span></span>
+<span class="srcline"><span class="lineno"><a href="27,165" id="srcline165">165</a></span><span class="line">    mat_out = [mat_in(1:6,:);mat_in(7:10,:);mat_in(10,:)-mat_in(12,:);mat_in(13,:);...</span></span>
+<span class="srcline"><span class="lineno"><a href="27,166" id="srcline166">166</a></span><span class="line">                             mat_in(14:16,:);mat_in(17,:)-mat_in(19,:);mat_in(20,:)];</span></span>
+<span class="srcline"><span class="lineno"><a href="27,167" id="srcline167">167</a></span><span class="line">end</span></span>
+<span class="srcline"><span class="lineno"><a href="27,168" id="srcline168">168</a></span><span class="line"> </span></span>
+</pre>
+</div>
+</body>
+</html>
