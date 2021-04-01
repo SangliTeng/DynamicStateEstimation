@@ -13,7 +13,7 @@ Cov = eye(12) * 0.01;              % input covariance
 % mean;           % output mean
 % Cov;            % output covariance
 % Cov_xy;         % input-output cross covariance
-kappa = 0.01;          % user-defined parameter to control the sigma points
+kappa = 1;          % user-defined parameter to control the sigma points
 Dim = 12;              % input dimention
 % X;              % 2n+1 sigma points
 % Y;              % mapped sigma points
@@ -21,7 +21,7 @@ Dim = 12;              % input dimention
 Q = eye(12) * 0.04;
 %%
 tic
-for k = 1:N_steps-1
+for k = 2000 * 3:N_steps-1
     if k == 10*2000
         k;
     end
@@ -60,7 +60,7 @@ for k = 1:N_steps-1
         w(2:end) = 1 / (2*(Dim + kappa));
 
         for i = 1:2*Dim+1
-            X(:,i) = Dynamics_UKF(X(:,i),input);
+            % X(:,i) = Dynamics_UKF(X(:,i),input);
             Y(:,i) = Observation_UKF(X(:,i),input);
         end
     end
@@ -74,7 +74,7 @@ for k = 1:N_steps-1
         Cov = Cov - K * Cov_y * K';
     end
     % Observation_UKF(mean,input)
-    %%
+   %%
     q_SE3_(k + 1,1:6) = x_hat(1:6);
     dq_SE3_(k + 1,1:6) = x_hat(7:12);
 end
