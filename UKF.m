@@ -1,5 +1,5 @@
-% clear;close;clc;
-% proceed_data;
+ clear;close;clc;
+ proceed_data;
 % a demo code to compute the GRF
 %% Data
 N_steps = length(Time);
@@ -38,7 +38,7 @@ for k = 2000 * 3:N_steps-1
     w(2:end) = 1 / (2*(Dim + kappa));
     
     for i = 1:2*Dim+1
-        X(:,i) = Dynamics_UKF(X(:,i),input);
+        X(:,i) = w(i)*Dynamics_UKF(X(:,i),input);
     end
     x_hat = mean(X,2);
     Cov = (X - x_hat) * diag(w) * (X - x_hat)' + Q;
@@ -61,7 +61,7 @@ for k = 2000 * 3:N_steps-1
 
         for i = 1:2*Dim+1
             % X(:,i) = Dynamics_UKF(X(:,i),input);
-            Y(:,i) = Observation_UKF(X(:,i),input);
+            Y(:,i) = w(i)*Observation_UKF(X(:,i),input);
         end
     end
     %% correct
