@@ -18,7 +18,7 @@ Dim = 12;              % input dimention
 % X;              % 2n+1 sigma points
 % Y;              % mapped sigma points
 % w;              % 2n+1 sigma points weights
-
+Q = eye(12) * 0.01;
 %%
 tic
 for k = 1:N_steps-1
@@ -49,40 +49,8 @@ for k = 1:N_steps-1
     
     Sigma_pred = Cov + Q;
     %% correct
-    % compute New sigma points
-    L = sqrt(Dim + kappa) * chol(P, 'lower');
-    Y = x_input(:, ones(1, numel(x_input)));
-    X = [x_input, Y + L, Y - L];
-    w = zeros(2 * Dim + 1, 1);
-    w(1) = kappa / (Dim + kappa);
-    w(2:end) = 1 / (2*(Dim + kappa));
-    
-    mean = 0;
-    Y = [];
-    for i = 1:2*Dim+1
-        Y(:,i) = Dynamics_UKF(X(:,i),input);
-        mean = mean + w(i) * Y(:,i);
-    end
-    Cov = (Y - mean) * diag(w) * (Y - mean)';
-    Cov_xy = (X - x_input) * diag(w) * (Y - mean)';
-    
-    v_hat = Observation_UKF(mean,input); % holonomic constraints: v_hat = 0
-    if ~isempty(v_hat)
-        s = v_hat - 0;
-        S = Cov + R;
-        % compute state-measurement cross covariance
-        Cov_xz = Cov_xy;
-
-        % filter gain
-        K = Cov_xz * (S \ eye(size(S)));
-
-        % correct the predicted state statistics
-        mean = mean + K * s;
-        Sigma = Sigma_pred - K * S * K';
-    end
-    
-    q_SE3_(k+1,:) = q_';
-    dq_SE3_(k+1,:) = dq_';
+   q_SE3_(k + 1,1:6) = mean(1:6);
+   dq_SE3_(k + 1,1:6) = mean(7:12);
 end
 toc
 %%
