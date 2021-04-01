@@ -21,7 +21,7 @@ Dim = 12;              % input dimention
 Q = eye(12) * 0.04;
 %%
 tic
-for k = 2000 * 3:N_steps-1
+for k = 1:N_steps-1
     if k == 10*2000
         k;
     end
@@ -37,10 +37,13 @@ for k = 2000 * 3:N_steps-1
     w(1) = kappa / (Dim + kappa);
     w(2:end) = 1 / (2*(Dim + kappa));
     
+    x_hat = zeros(Dim,1);
     for i = 1:2*Dim+1
         X(:,i) = Dynamics_UKF(X(:,i),input);
+        x_hat = x_hat + X(:,i) * w(i);
     end
-    x_hat = mean(X,2);
+    % x_hat = mean(X * diag(w),2);
+    % x_hat = mean(X,2);
     Cov = (X - x_hat) * diag(w) * (X - x_hat)' + Q;
 
     % compute sigma points for measurments
@@ -58,15 +61,16 @@ for k = 2000 * 3:N_steps-1
         w = zeros(2 * Dim + 1, 1);
         w(1) = kappa / (Dim + kappa);
         w(2:end) = 1 / (2*(Dim + kappa));
-
+        Y_hat = zeros(size(Y,1),1);
         for i = 1:2*Dim+1
             % X(:,i) = Dynamics_UKF(X(:,i),input);
             Y(:,i) = Observation_UKF(X(:,i),input);
+            Y_hat = Y_hat + w(i) * Y(:,i);
         end
     end
     %% correct
     if ~isempty(Y)
-        Y_hat = mean(Y,2);
+        % Y_hat = mean(Y,2);
         Cov_y = (Y - Y_hat) * diag(w) * (Y - Y_hat)' + 1e-6 * eye(size(Y,1)); % R
         Cov_xy = (X - x_hat) * diag(w) * (Y - Y_hat)';
         K = Cov_xy * Cov_y^(-1);
@@ -89,7 +93,7 @@ for k = 1:6
     plot(Time,q_SE3_(:,k),'b')
     plot(Time,q_SE3(:,k),'r-.')
     xlim([0,Time(end)])
-    ylim([-3,3])
+    % ylim([-2,2])
 end
 
 figure
@@ -100,5 +104,5 @@ for k = 1:6
     plot(Time,dq_SE3_(:,k),'b')
     plot(Time,dq_SE3(:,k),'r-.')
     xlim([0,Time(end)])
-    ylim([-3,3])
+    ylim([-2,2])
 end
