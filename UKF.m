@@ -1,5 +1,5 @@
-clear;close;clc;
-proceed_data;
+% clear;close;clc;
+% proceed_data;
 % a demo code to compute the GRF
 %% Data
 N_steps = length(Time);
@@ -8,7 +8,7 @@ dq_SE3_ = dq_SE3 * 0;% zeros(N_steps,6);
 dt = Time(2) - Time(1);
 %% UKF parameters
 x_input = zeros(12,1);        % input mean
-P = eye(12) * 0.01;              % input covariance
+Cov = eye(12) * 0.01;              % input covariance
 % L;              % scaled Cholesky factor of P
 % mean;           % output mean
 % Cov;            % output covariance
@@ -18,39 +18,65 @@ Dim = 12;              % input dimention
 % X;              % 2n+1 sigma points
 % Y;              % mapped sigma points
 % w;              % 2n+1 sigma points weights
-Q = eye(12) * 0.01;
+Q = eye(12) * 0.04;
 %%
 tic
 for k = 1:N_steps-1
     if k == 10*2000
         k;
     end
-    
     x_input = [q_SE3_(k,1:6)';dq_SE3_(k,1:6)'];
     input = [q_leg(k,:)';dq_leg(k,:)';u(k,:)';contact(k,:)';dt];
     
     %% propagate
-    % compute sigma points
-    L = sqrt(Dim + kappa) * chol(P, 'lower');
-    Y = x_input(:, ones(1, numel(x_input)));
-    X = [x_input, Y + L, Y - L];
+    % compute sigma points for process covariance
+    L = sqrt(Dim + kappa) * chol(Cov, 'lower');
+    X = x_input(:, ones(1, numel(x_input)));
+    X = [x_input, X + L, X - L];
     w = zeros(2 * Dim + 1, 1);
     w(1) = kappa / (Dim + kappa);
     w(2:end) = 1 / (2*(Dim + kappa));
     
-    mean = 0;
-    Y = [];
     for i = 1:2*Dim+1
-        Y(:,i) = Dynamics_UKF(X(:,i),input);
-        mean = mean + w(i) * Y(:,i);
+        X(:,i) = Dynamics_UKF(X(:,i),input);
     end
-    Cov = (Y - mean) * diag(w) * (Y - mean)';
-    Cov_xy = (X - x_input) * diag(w) * (Y - mean)';
-    
-    Sigma_pred = Cov + Q;
+    x_hat = mean(X,2);
+    Cov = (X - x_hat) * diag(w) * (X - x_hat)' + Q;
+
+    % compute sigma points for measurments
+    Y = [];
+    if contact(k,1) > 0.5
+        Y = [Y;zeros(3,2*Dim+1)];
+    end
+    if contact(k,2) > 0.5
+        Y = [Y;zeros(3,2*Dim+1)];
+    end
+    if ~isempty(Y)
+        L = sqrt(Dim + kappa) * chol(Cov, 'lower');
+        X = x_hat(:, ones(1, numel(x_hat)));
+        X = [x_hat, X + L, X - L];
+        w = zeros(2 * Dim + 1, 1);
+        w(1) = kappa / (Dim + kappa);
+        w(2:end) = 1 / (2*(Dim + kappa));
+
+        for i = 1:2*Dim+1
+            X(:,i) = Dynamics_UKF(X(:,i),input);
+            Y(:,i) = Observation_UKF(X(:,i),input);
+        end
+    end
     %% correct
-   q_SE3_(k + 1,1:6) = mean(1:6);
-   dq_SE3_(k + 1,1:6) = mean(7:12);
+    if ~isempty(Y)
+        Y_hat = mean(Y,2);
+        Cov_y = (Y - Y_hat) * diag(w) * (Y - Y_hat)' + 1e-6 * eye(size(Y,1)); % R
+        Cov_xy = (X - x_hat) * diag(w) * (Y - Y_hat)';
+        K = Cov_xy * Cov_y^(-1);
+        x_hat = x_hat + K * (0 - Y_hat);
+        Cov = Cov - K * Cov_y * K';
+    end
+    % Observation_UKF(mean,input)
+    %%
+    q_SE3_(k + 1,1:6) = x_hat(1:6);
+    dq_SE3_(k + 1,1:6) = x_hat(7:12);
 end
 toc
 %%
@@ -75,29 +101,4 @@ for k = 1:6
     plot(Time,dq_SE3(:,k),'r-.')
     xlim([0,Time(end)])
     ylim([-3,3])
-end
-%%
-function ut = sigma_points(ut)
-    % sigma points around the reference point
-    ut.L = sqrt(ut.n + ut.kappa) * chol(ut.P, 'lower');
-    Y = ut.x_input(:, ones(1, numel(ut.x_input)));
-    ut.X = [ut.x_input, Y + ut.L, Y - ut.L];
-    ut.w = zeros(2 * ut.n + 1, 1);
-    ut.w(1) = ut.kappa / (ut.n + ut.kappa);
-    ut.w(2:end) = 1 / (2*(ut.n + ut.kappa));
-end
-
-function propagate(ut)
-    % propagate the input Gaussian using an unscented transform
-    ut = sigma_points(ut);
-    % compute sample mean and covariance
-    ut.mean = 0;
-    ut.Cov = 0;
-    ut.Y = [];
-    for i = 1:2*ut.n+1
-        ut.Y(:,i) = ut.func(ut.X(:,i)); % use our function
-        ut.mean = ut.mean + ut.w(i) * ut.Y(:,i);
-    end
-    ut.Cov = (ut.Y - ut.mean) * diag(ut.w) * (ut.Y - ut.mean)';
-    ut.Cov_xy = (ut.X - ut.x_input) * diag(ut.w) * (ut.Y - ut.mean)';
 end
