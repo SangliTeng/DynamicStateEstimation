@@ -1,5 +1,5 @@
-% clear;close;clc;
-% proceed_data;
+ clear;close;clc;
+ proceed_data;
 % a demo code to compute the GRF
 %% Data
 N_steps = length(Time);
