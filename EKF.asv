@@ -9,9 +9,9 @@ dt = (Time(2) - Time(1)) * N;
 %% EKF parameters
 x_input = zeros(12,1);        % input mean
 Q_inv = eye(12) * 1 / 1e-2; % process noise
-R_inv = 1 / 1e-4; % measurement noise
-reg_1 = ones(12,1) * 5;
-reg_2 = ones(12,1) * 5;
+R_inv = 1 / 1e-8; % measurement noise
+reg_1 = ones(12,1) * 1;
+reg_2 = ones(12,1) * 1;
 options = optimset('Algorithm','interior-point-convex','Display','iter'); % interior-point-convex
 %%
 tic
@@ -27,12 +27,9 @@ for k = 1:N:N_steps-1
                 -Q_inv * Ad, Q_inv + diag(reg_2) ];
             b = [-Q_inv * Ad * ud;-Q_inv * ud];
         else
-            R_inv_ = ones(size(H,1),1);
-            R_inv_(end-2:end) = 1e-4;
-            R_inv_ = diag(R_inv_) * R_inv;
-            A = [Ad' * Q_inv * Ad + H' * R_inv_ * H + diag(reg_1), -Ad' * Q_inv;...
+            A = [Ad' * Q_inv * Ad + H' * R_inv * H + diag(reg_1), -Ad' * Q_inv;...
                 -Q_inv * Ad, Q_inv + diag(reg_2) ];
-            b = [H' * R_inv_ * z - Q_inv * Ad * ud; -Q_inv * ud];
+            b = [H' * R_inv * z - Q_inv * Ad * ud; -Q_inv * ud];
         end
         x_hat = -pinv(A) * b;
         % x_hat = quadprog(A,b,[],[],[],[],[],[],zeros(24,1),options);
@@ -41,8 +38,7 @@ for k = 1:N:N_steps-1
         if delta < 1e-5
            break; 
         end
-        alpha = 0.5;
-        x_input = x_hat(1:12) * alpha + x_input * (1 - alpha);
+        x_input = x_hat(1:12);
 %         x_hat_1 = x_hat(1:12);
 %         x_hat_2 = x_hat(13:end);
     end
