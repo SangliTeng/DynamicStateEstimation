@@ -4,7 +4,7 @@
 N_steps = length(Time);
 q_SE3_ = q_SE3 * 0;% zeros(N_steps,6);
 dq_SE3_ = dq_SE3 * 0;% zeros(N_steps,6);
-N = 2;
+N = 5;
 dt = (Time(2) - Time(1)) * N;
 %% EKF parameters
 x_input = zeros(12,1);        % input mean
@@ -18,7 +18,7 @@ tic
 for k = 1:N:N_steps-1
     x_input = [q_SE3_(k,1:6)';dq_SE3_(k,1:6)'];
     input = [q_leg(k,:)';dq_leg(k,:)';u(k,:)';contact(k,:)';dt];
-    %% EKF as QP
+    %% EKF as SQP
     % use full dynamics:
     for tt = 1:10
         [Ad, ud, H, z] = Dynamics_EKF(x_input,input,q_SE3(k,4:6),dq_SE3(k,4:6));
@@ -37,14 +37,11 @@ for k = 1:N:N_steps-1
         x_hat = -pinv(A) * b;
         % x_hat = quadprog(A,b,[],[],[],[],[],[],zeros(24,1),options);
         delta = norm(x_input - x_hat(1:12));
-        % disp(delta)
         if delta < 1e-5
            break; 
         end
         alpha = 0.5;
         x_input = x_hat(1:12) * alpha + x_input * (1 - alpha);
-%         x_hat_1 = x_hat(1:12);
-%         x_hat_2 = x_hat(13:end);
     end
     x_hat_1 = x_hat(1:12);
     x_hat_2 = x_hat(13:end);
