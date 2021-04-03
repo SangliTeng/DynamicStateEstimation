@@ -31,11 +31,11 @@ function [Ad, ud, H, z] = Dynamics_EKF(x,input,r,dr)
         
         H = J(:,1:6);
         H = [zeros(size(H)),H];
-        z = J(:,7:end) * dq([7,8,9,10,13,14,15,16,17,20]);
+        z = -J(:,7:end) * dq([7,8,9,10,13,14,15,16,17,20]);
     end
     
     w = eul2rotm(r) * dr([3,2,1])';
-    w = -w([3,2,1]);
+    w = w([3,2,1]) + 100 * randn(3,1);
     z = [z;w];
     P = [0,0,1;
          0,1,0;
