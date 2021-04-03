@@ -40,12 +40,12 @@ function [Ad, ud, H, z] = Dynamics_EKF(x,input,r,dr)
     P = [0,0,1;
          0,1,0;
          1,0,0];
-    H = [H;[zeros(3), P*eul2rotm(x(1:3)')'*P, zeros(3,6)]];
+    H = [H;[zeros(3,6),zeros(3), P*eul2rotm(x(4:6)')'*P]];
     
     Ac = [zeros(6),eye(6);...
           zeros(6),-D_inv * C_] * dt;
     u = [zeros(6,1);D_inv * (B_ * tau - G_)];
     
-    Ad = eye(12) + Ac * (Ac * (Ac/6 + 1/2) + 1);
-    ud = (eye(12) * dt + Ac * (Ac/6 + 1/2) * dt) * u;
+    Ad = eye(12) + Ac * (Ac * (Ac/6 + 1/2 * eye(size(Ac,1))) + 1 * eye(size(Ac,1)));
+    ud = (eye(12) * dt + Ac * (Ac/6 + 1/2 * eye(size(Ac,1))) * dt) * u;
 end

@@ -8,7 +8,9 @@ N = 5;
 dt = (Time(2) - Time(1)) * N;
 %% EKF parameters
 x_input = zeros(12,1);        % input mean
-Q_inv = eye(12) * 1 / 1e-2; % process noise
+% Q_vec = [1e-2,1e-2,1e-2, 1,1,1, 1e-2,1e-2,1e-2, 1,1,1];
+Q_vec = ones(12,1);
+Q_inv = diag(Q_vec) * 1 / 1e-2; % process noise
 R_inv = 1 / 1e-4; % measurement noise
 reg_1 = ones(12,1) * 5;
 reg_2 = ones(12,1) * 5;
@@ -28,7 +30,7 @@ for k = 1:N:N_steps-1
             b = [-Q_inv * Ad * ud;-Q_inv * ud];
         else
             R_inv_ = ones(size(H,1),1);
-            R_inv_(end-2:end) = 1e-4;
+            R_inv_(end-2:end) = 1 / 1e-2;
             R_inv_ = diag(R_inv_) * R_inv;
             A = [Ad' * Q_inv * Ad + H' * R_inv_ * H + diag(reg_1), -Ad' * Q_inv;...
                 -Q_inv * Ad, Q_inv + diag(reg_2) ];
@@ -45,6 +47,8 @@ for k = 1:N:N_steps-1
     end
     x_hat_1 = x_hat(1:12);
     x_hat_2 = x_hat(13:end);
+%     x_hat_1(4:6) = wrapTo2Pi(x_hat_1(4:6));
+%     x_hat_2(4:6) = wrapTo2Pi(x_hat_2(4:6));
     %%
     q_SE3_(k,1:6) = x_hat_1(1:6);
     dq_SE3_(k,1:6) = x_hat_1(7:12);
@@ -60,10 +64,14 @@ seq = [1,3,5,2,4,6];
 for k = 1:6
     subplot(3,2,seq(k))
     hold on
-    plot(Time(1:N:end),q_SE3_(1:N:length(Time),k),'b')
+    if k < 4
+        plot(Time(1:N:end),q_SE3_(1:N:length(Time),k),'b')
+    else
+        plot(Time(1:N:end),wrapTo2Pi(q_SE3_(1:N:length(Time),k) + pi) - pi,'b')
+    end
     plot(Time(1:N:end),q_SE3(1:N:length(Time),k),'r-.')
     xlim([0,Time(end)])
-    ylim([-1,1])
+    ylim([-.2,.2])
 end
 figure
 seq = [1,3,5,2,4,6];
