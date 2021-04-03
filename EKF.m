@@ -4,7 +4,7 @@
 N_steps = length(Time);
 q_SE3_ = q_SE3 * 0;% zeros(N_steps,6);
 dq_SE3_ = dq_SE3 * 0;% zeros(N_steps,6);
-N = 5;
+N = 10;
 dt = (Time(2) - Time(1)) * N;
 %% EKF parameters
 x_input = zeros(12,1);        % input mean
@@ -22,7 +22,7 @@ for k = 1:N:N_steps-1
     input = [q_leg(k,:)';dq_leg(k,:)';u(k,:)';contact(k,:)';dt];
     %% EKF as SQP
     % use full dynamics:
-    for tt = 1:10
+    for tt = 1:3
         [Ad, ud, H, z] = Dynamics_EKF(x_input,input,q_SE3(k,4:6),dq_SE3(k,4:6));
         if isempty(H)
             A = [Ad' * Q_inv * Ad + diag(reg_1), -Ad' * Q_inv;...
@@ -81,5 +81,5 @@ for k = 1:6
     plot(Time(1:N:end),dq_SE3_(1:N:length(Time),k),'b')
     plot(Time(1:N:end),dq_SE3(1:N:length(Time),k),'r-.')
     xlim([0,Time(end)])
-    ylim([-4,4])
+    ylim([-2,2])
 end
