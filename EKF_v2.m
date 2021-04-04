@@ -12,7 +12,7 @@ dt = (Time(2) - Time(1)) * N;
 x_input = zeros(12,1);        % input mean
 % Q_vec = [1e-2,1e-2,1e-2, 1,1,1, 1e-2,1e-2,1e-2, 1,1,1];
 Q_vec = [1 1 1 1 1 1 1 1 1 1 1 1];
-Q_inv = diag(Q_vec) * 1 / 3e-4; % process noise
+Q_inv = diag(Q_vec) * 1 / 3e-3; % process noise
 R_inv = 1 / 1e-4; % measurement noise
 
 % regularization term

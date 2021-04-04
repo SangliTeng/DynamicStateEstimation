@@ -21,7 +21,7 @@ reg_1([1,2,3]) = 2e-1;
 reg_1([4,5,6]) = 5;
 reg_1([7,8,9]) = 1;
 reg_1([10,11,12]) = 5;
-reg_1 = reg_1 * 30;
+reg_1 = reg_1 * 2;
 
 reg_2 = ones(12,1);
 reg_2([1,2,3]) = 2e-1;
@@ -91,7 +91,7 @@ seq = [1,3,5,2,4,6];
 for k = 1:6
     subplot(3,2,seq(k))
     hold on
-    if k < 4
+    if k < 40
         plot(Time(1:N:end),q_SE3_(1:N:length(Time),k),'b')
         plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
     else
