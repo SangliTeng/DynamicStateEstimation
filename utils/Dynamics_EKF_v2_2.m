@@ -1,4 +1,4 @@
-function [Ad, ud, H, z] = Dynamics_EKF_v2(x,input,r,dr)
+function [Ad, ud, H, z] = Dynamics_EKF_v2_2(x,input,r,dr)
     q = [x(1:6);input(1:14)];
     dq = [x(7:12);input(15:28)];
     tau = input(29:38);

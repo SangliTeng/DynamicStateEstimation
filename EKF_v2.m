@@ -2,8 +2,8 @@
 % proceed_data;
 %% Data
 N_steps = length(Time);
-q_SE3_ = q_SE3;% zeros(N_steps,6);
-dq_SE3_ = dq_SE3;% zeros(N_steps,6);
+q_SE3_ = q_SE3 * 0;% zeros(N_steps,6);
+dq_SE3_ = dq_SE3 * 0;% zeros(N_steps,6);
 Freq = 100;
 Start = 0;
 N = ceil(2000 / Freq);
@@ -12,7 +12,7 @@ dt = (Time(2) - Time(1)) * N;
 x_input = zeros(12,1);        % input mean
 % Q_vec = [1e-2,1e-2,1e-2, 1,1,1, 1e-2,1e-2,1e-2, 1,1,1];
 Q_vec = [1 1 1 1 1 1 1 1 1 1 1 1];
-Q_inv = diag(Q_vec) * 1 / 1e-3; % process noise
+Q_inv = diag(Q_vec) * 1 / 3e-4; % process noise
 R_inv = 1 / 1e-4; % measurement noise
 
 % regularization term
@@ -21,56 +21,50 @@ reg_1([1,2,3]) = 2e-1;
 reg_1([4,5,6]) = 5;
 reg_1([7,8,9]) = 1;
 reg_1([10,11,12]) = 5;
-reg_2 = reg_2 * 10;
+reg_1 = reg_1 * 0e-4;
 
 reg_2 = ones(12,1);
 reg_2([1,2,3]) = 2e-1;
 reg_2([4,5,6]) = 5;
 reg_2([7,8,9]) = 1;
 reg_2([10,11,12]) = 5;
-reg_2 = reg_2 * 10;
+
 options = optimset('Algorithm','interior-point-convex','Display','iter'); % interior-point-convex
 %%
 tic
-for k = Start+1:N:N_steps-1
+for k = Start+1:N:N_steps - 1 - N
+    %% Solving EKF as AMP via QP
+    % propagate one step as initial guess
     x_input = [q_SE3_(k,1:6)';dq_SE3_(k,1:6)'];
     input = [q_leg(k,:)'+ randn(14,1) * 1e-4;dq_leg(k,:)'+ randn(14,1) * 1e-4;u(k,:)';contact(k,:)';dt];
-    %% Solving EKF as AMP via QP
-    % use full dynamics:
-    for tt = 1:1
-        [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input,q_SE3(k,4:6),dq_SE3(k,4:6));
-        if isempty(H)
-            A = [Ad' * Q_inv * Ad + diag(reg_1), -Ad' * Q_inv;...
-                -Q_inv * Ad, Q_inv + diag(reg_2) ];
-            b = [Q_inv * Ad * ud;-Q_inv * ud];
-        else
-            R_inv_ = ones(size(H,1),1);
-            R_inv_(end-2:end) = 1 / 1e-2;
-            R_inv_ = diag(R_inv_) * R_inv;
-            A = [Ad' * Q_inv * Ad + H' * R_inv_ * H + diag(reg_1), -Ad' * Q_inv;...
-                -Q_inv * Ad, Q_inv + diag(reg_2) ];
-            b = [-H' * R_inv_ * z + Q_inv * Ad * ud; -Q_inv * ud];
-        end
-        % x_hat = -pinv(A) * b;
-        x_hat = -inv(A) * b;
-        % x_hat = quadprog(A,b,[],[],[],[],[],[],zeros(24,1),options);
-        delta = norm(x_input - x_hat(1:12));
+    
+    [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input,q_SE3(k,4:6),dq_SE3(k,4:6));
+    x_input = Ad * x_input + ud;
+    x_ = x_input;
+    
+    % SQP loop
+    % use measurement at k+N
+    input = [q_leg(k+N,:)'+ randn(14,1) * 1e-4;dq_leg(k+N,:)'+ randn(14,1) * 1e-4;u(k+N,:)';contact(k+N,:)';dt];
+    for tt = 1:10
+        [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input,q_SE3(k+N,4:6),dq_SE3(k+N,4:6));
+        
+        R_inv_ = ones(size(H,1),1);
+        R_inv_(end-2:end) = 1 / 1e-2;
+        R_inv_ = diag(R_inv_) * R_inv;
+        
+        A = Q_inv + H' * R_inv * H + reg_1;
+        b = Q_inv * x_ + H' * R_inv * z;
+        x_input_ = A^(-1) * b;
+        delta = norm(x_input - x_input_);
         % disp(delta)
-        if delta < dt * 1e-1
+        x_input = x_input_;
+        if delta < 1e-3
            break; 
         end
-%         alpha = 0.2;
-%         x_input = x_hat(1:12) * alpha + x_input * (1 - alpha);
-        x_input = Ad * x_hat(1:12) + ud;
     end
-    x_hat_1 = x_hat(1:12);
-    x_hat_2 = x_input; % x_hat(13:end);
     %%
-    q_SE3_(k,1:6) = x_hat_1(1:6);
-    dq_SE3_(k,1:6) = x_hat_1(7:12);
-    
-    q_SE3_(k + N,1:6) = x_hat_2(1:6);
-    dq_SE3_(k + N,1:6) = x_hat_2(7:12);
+    q_SE3_(k + N,1:6) = x_input(1:6);
+    dq_SE3_(k + N,1:6) = x_input(7:12);
 end
 toc
 %%

@@ -21,24 +21,24 @@ reg_1([1,2,3]) = 2e-1;
 reg_1([4,5,6]) = 5;
 reg_1([7,8,9]) = 1;
 reg_1([10,11,12]) = 5;
-reg_2 = reg_2 * 10;
 
 reg_2 = ones(12,1);
 reg_2([1,2,3]) = 2e-1;
 reg_2([4,5,6]) = 5;
 reg_2([7,8,9]) = 1;
 reg_2([10,11,12]) = 5;
-reg_2 = reg_2 * 10;
+% reg_2 = reg_2 * 1e-1;
 options = optimset('Algorithm','interior-point-convex','Display','iter'); % interior-point-convex
 %%
 tic
 for k = Start+1:N:N_steps-1
     x_input = [q_SE3_(k,1:6)';dq_SE3_(k,1:6)'];
-    input = [q_leg(k,:)'+ randn(14,1) * 1e-4;dq_leg(k,:)'+ randn(14,1) * 1e-4;u(k,:)';contact(k,:)';dt];
+    input_1 = [q_leg(k,:)'+ randn(14,1) * 1e-4;dq_leg(k,:)'+ randn(14,1) * 1e-4;u(k,:)';contact(k,:)';dt];
+    input_2 = [q_leg(k+N,:)'+ randn(14,1) * 1e-4;dq_leg(k+N,:)'+ randn(14,1) * 1e-4;u(k+N,:)';contact(k+N,:)';dt];
     %% Solving EKF as AMP via QP
     % use full dynamics:
     for tt = 1:1
-        [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input,q_SE3(k,4:6),dq_SE3(k,4:6));
+        [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input_1,q_SE3(k,4:6),dq_SE3(k,4:6));
         if isempty(H)
             A = [Ad' * Q_inv * Ad + diag(reg_1), -Ad' * Q_inv;...
                 -Q_inv * Ad, Q_inv + diag(reg_2) ];
@@ -53,15 +53,13 @@ for k = Start+1:N:N_steps-1
         end
         % x_hat = -pinv(A) * b;
         x_hat = -inv(A) * b;
-        % x_hat = quadprog(A,b,[],[],[],[],[],[],zeros(24,1),options);
         delta = norm(x_input - x_hat(1:12));
         % disp(delta)
         if delta < dt * 1e-1
            break; 
         end
-%         alpha = 0.2;
-%         x_input = x_hat(1:12) * alpha + x_input * (1 - alpha);
-        x_input = Ad * x_hat(1:12) + ud;
+        alpha = 0.2;
+        x_input = x_hat(1:12) * alpha + x_input * (1 - alpha);
     end
     x_hat_1 = x_hat(1:12);
     x_hat_2 = x_input; % x_hat(13:end);
