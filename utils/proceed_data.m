@@ -15,6 +15,12 @@ q_SE3_quat = [squeeze(raw.lin_base.Data(:,[1,2,3])),...
 dq_SE3 = [squeeze(raw.lin_base.Data(:,[4,5,6])),...
          squeeze(raw.ang_base.Data(:,[14,15,16]))];
 dq_SE3(:,[4,5,6]) = dq_SE3(:,[6,5,4]);
+%%
+dq_SE3_b_ref = dq_SE3;
+for k = 1:length(dq_SE3)
+    dq_SE3_b_ref(k,1:3) = eul2rotm(q_SE3(k,4:6)) * dq_SE3(k,1:3)';
+    dq_SE3_b_ref(k,[6,5,4]) = eul2rotm(q_SE3(k,4:6)) * dq_SE3(k,[6,5,4])';
+end
 %% measurements
 Time = raw.outputs.leftLeg.hipRollDrive.position.Time;
 % joint position
@@ -75,8 +81,8 @@ contact = squeeze(raw.Data.s_LR.Data)';
 % IMU need to check the IMU orientation
 % we try without IMU.
 %%
-IMU = [squeeze(raw.acc_imu.Data(:,4:6)),...
-       squeeze(raw.vel_imu.Data(:,1:3))];
+IMU = [squeeze(raw.outputs.pelvis.vectorNav.linearAcceleration.Data)',...
+       squeeze(raw.outputs.pelvis.vectorNav.angularVelocity.Data)']; 
 Acc = squeeze(raw.acc_imu.Data(:,:));
 Acc = Acc(:,[4,5,6,1,2,3]);
 %%

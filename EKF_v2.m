@@ -2,8 +2,11 @@
 % proceed_data;
 %% Data
 N_steps = length(Time);
-q_SE3_ = q_SE3 * 0;% zeros(N_steps,6);
-dq_SE3_ = dq_SE3 * 0;% zeros(N_steps,6);
+q_SE3_ = q_SE3;% zeros(N_steps,6);
+dq_SE3_ = dq_SE3;% zeros(N_steps,6);
+q_SE3_b = q_SE3;% zeros(N_steps,6);
+dq_SE3_b = dq_SE3;% zeros(N_steps,6);
+
 Freq = 100;
 Start = 0;
 N = ceil(2000 / Freq);
@@ -11,7 +14,7 @@ dt = (Time(2) - Time(1)) * N;
 %% EKF parameters
 x_input = zeros(12,1);        % input mean
 % Q_vec = [1e-2,1e-2,1e-2, 1,1,1, 1e-2,1e-2,1e-2, 1,1,1];
-Q_vec = [1 1 1 1 1 1 1 1 1 1 1 1];
+Q_vec = [1 1 1 1e-3 1e-3 1e-3 1 1 1 1e-3 1e-3 1e-3];
 Q_inv = diag(Q_vec) * 1 / 3e-3; % process noise
 R_inv = 1 / 1e-4; % measurement noise
 
@@ -45,15 +48,15 @@ for k = Start+1:N:N_steps - 1 - N
     % SQP loop
     % use measurement at k+N
     input = [q_leg(k+N,:)'+ randn(14,1) * 1e-4;dq_leg(k+N,:)'+ randn(14,1) * 1e-4;u(k+N,:)';contact(k+N,:)';dt];
-    for tt = 1:10
+    for tt = 1:1
         [Ad, ud, H, z] = Dynamics_EKF_v2(x_input,input,q_SE3(k+N,4:6),dq_SE3(k+N,4:6));
         
         R_inv_ = ones(size(H,1),1);
         R_inv_(end-2:end) = 1 / 1e-2;
         R_inv_ = diag(R_inv_) * R_inv;
         
-        A = Q_inv + H' * R_inv * H + reg_1;
-        b = Q_inv * x_ + H' * R_inv * z;
+        A = Q_inv + H' * R_inv_ * H + reg_1;
+        b = Q_inv * x_ + H' * R_inv_ * z;
         x_input_ = A^(-1) * b;
         delta = norm(x_input - x_input_);
         % disp(delta)
@@ -64,7 +67,12 @@ for k = Start+1:N:N_steps - 1 - N
     end
     %%
     q_SE3_(k + N,1:6) = x_input(1:6);
+    q_SE3_b(k + N,1:6) = x_input(1:6);
+    
     dq_SE3_(k + N,1:6) = x_input(7:12);
+    
+    dq_SE3_b(k + N,1:3) = eul2rotm(x_input(4:6)')' * dq_SE3_(k + N,1:3)';
+    dq_SE3_b(k + N,[6,5,4]) = eul2rotm(x_input(4:6)')' * dq_SE3_(k + N,[6;5;4])';
 end
 toc
 %%
@@ -74,10 +82,10 @@ seq = [1,3,5,2,4,6];
 for k = 1:6
     subplot(3,2,seq(k))
     hold on
-    plot(Time(1:N:end),dq_SE3_(1:N:length(Time),k),'b')
-    plot(Time(1:N:end),dq_SE3(1:N:length(Time),k),'r-.')
+    plot(Time(1:N:end),dq_SE3_b(1:N:length(Time),k),'b')
+    plot(Time(1:N:end),dq_SE3_b_ref(1:N:length(Time),k),'r-.')
     xlim([0,Time(end)])
-    % ylim([-2,2])
+    ylim([-1,1])
 end
 
 figure
@@ -87,7 +95,7 @@ for k = 1:6
     hold on
     if k < 4
         plot(Time(1:N:end),q_SE3_(1:N:length(Time),k),'b')
-        plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
+        % plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
     else
         plot(Time(1:N:end),wrapTo2Pi(q_SE3_(1:N:length(Time),k) + pi) - pi,'b')
     end

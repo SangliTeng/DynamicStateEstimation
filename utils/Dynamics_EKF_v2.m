@@ -5,7 +5,7 @@ function [Ad, ud, H, z] = Dynamics_EKF_v2(x,input,r,dr)
     contact = input(39:40);
     dt = input(end);
     
-    [D, ~, ~, J, dJ, h] = CassieDynamics_Full(q,dq,contact);
+    [D, C, G, J, dJ, h] = CassieDynamics_Full(q,dq,contact);
     Nc = rank(J);
     if Nc > 0
 %         [U,~,~] = svd(J');
@@ -23,9 +23,10 @@ function [Ad, ud, H, z] = Dynamics_EKF_v2(x,input,r,dr)
         d2q = D^(-1) * ([zeros(6,1);tau] - h);
         H = [];
         z = [];
+        % d2q(3)
     end
     w = eul2rotm(r) * dr([3,2,1])';
-    w = w([3,2,1]) + 0 * randn(3,1);
+    w = w([3,2,1]) + 2e-2 * randn(3,1);
     z = [z;w];
     P = [0,0,1;
          0,1,0;
