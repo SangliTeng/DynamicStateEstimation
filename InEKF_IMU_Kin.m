@@ -1,5 +1,6 @@
 clear;close;clc;
 proceed_data;
+dt = diff(Time);
 %% Data
 N_steps = length(Time);
 q_SE3_ = q_SE3;% zeros(N_steps,6);
