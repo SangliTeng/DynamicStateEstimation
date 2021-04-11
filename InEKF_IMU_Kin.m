@@ -14,13 +14,49 @@ p = q_SE3(1,1:3)';
 v = zeros(3,1);
 b_a = zeros(3,1);
 b_g = zeros(3,1);
+g = [0 0 -9,8067]' % gravitational force vector
+noise_omega =  [0 0 0];
+noise_acc = [0 0 0];
+noise_ba = [0 0 0];
+noise_bg = [0 0 0];
+noise_vector = [noise_omega, noise_acc, zeros(1,3), noise_ba, noise_bg];
 %% InEKF loop
 for k = 1:length(IMU)
     %% propagation
     % step 1: X = f(X,u)
-    
+    cur_acc = IMU(k,1:3);                                                  % extract current acceleration from data , frame: robot frame
+    cur_omega = IMU(k,4:6);                                                % extract current omega from data
+    R_ = R * expm((cur_omega - b_g)*dt(k));                                % update R matrix
+    v_ = v + R * (cur_acc - b_a) * dt(k) + g * dt(k);                      % update v vector
+    p_ = p + v * dt(k) + 1/2 * (R * ( a - b_a ) + g) * dt(k) * dt(k);      % update p
+    b_a_ = b_a;                                              
+    b_g_ = b_g;
     % step 2: update the covariance, use the discrete state transition matrix Phi
-    
+    % compute A matrix
+    A = zeros(15,15);
+    A( 4:6, 1:3) = skew(g);
+    A(7:9, 4:6) = eyes(3);
+    A(1:3, 10:12) = - R;
+    A(4:6, 10:12) = -skew(v)*R;
+    A(9:12,10:12) = -skew(p)*R;
+    A(4:6, 13:15) = - R;
+    A(10:15, 10:15) = eyes(6);
+    % compute adjoint matrix of xi
+    xi_adj = zeros(9,9);
+    xi_adj(1:3,1:3) = R;
+    xi_adj(4:6, 1:3) = -skew(v)*R;
+    xi_adj(9:12,1:3) = -skew(p)*R;
+    xi_adj(4:6, 4:6) = R;
+    xi_adj(7:9, 7:9) = R;
+    % compute B and Q
+    B = zeros(15,15);
+    B(1:9, 1:9) = xi_adj;
+    B(10:15,10:15) = eyes(6);
+    Cov_noise = noise_vector' * noise_vector;
+    Q = B * Cov_noise * B;
+    % update P matrix
+    Phi = expm(A*dt(k));
+    P = Phi * P * Phi' + Q; 
     %% correction
     % form the kinematics measurementes. 
     H = [];
