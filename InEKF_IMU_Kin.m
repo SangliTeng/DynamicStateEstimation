@@ -14,24 +14,24 @@ p = q_SE3(1,1:3)';
 v = zeros(3,1);
 b_a = zeros(3,1);
 b_g = zeros(3,1);
-g = [0 0 -9.8067]' % gravitational force vector
+g = [0 0 -9.8067]'; % gravitational force vector
 noise_omega =  [0 0 0];
 noise_acc = [0 0 0];
 noise_ba = [0 0 0];
 noise_bg = [0 0 0];
-noise_vector = [noise_omega, noise_acc, zeros(1,3), noise_ba, noise_bg];
+Cov_noise = blkdiag(diag(noise_omega), diag(noise_acc), diag(zeros(1,3)), diag(noise_ba), diag(noise_bg));
 %% InEKF loop
 for k = 1:length(IMU)
     %% propagation
     % step 1: X = f(X,u)
     cur_acc = IMU(k,1:3)';                                                  % extract current acceleration from data , frame: robot frame
     cur_omega = IMU(k,4:6)';                                                % extract current omega from data
-    R_ = R * exp((cur_omega - b_g)*dt(k));                                % update R matrix
-    v_ = v + R * (cur_acc - b_a) * dt(k) + g * dt(k);                      % update v vector
-    p_ = p + v * dt(k) + 1/2 * (R * ( cur_acc - b_a ) + g) * dt(k) * dt(k);      % update p
+    R_ = R * exp((cur_omega - b_g)*dt(k));                                  % update R matrix
+    v_ = v + R * (cur_acc - b_a) * dt(k) + g * dt(k);                       % update v vector
+    p_ = p + v * dt(k) + 1/2 * (R * ( cur_acc - b_a ) + g) * dt(k) * dt(k); % update p
     b_a_ = b_a;                                              
     b_g_ = b_g;
-    % step 2: update the covariance, use the discrete state transition matrix Phi
+    %% step 2: update the covariance, use the discrete state transition matrix Phi
     % compute A matrix
     A = zeros(15,15);
     A( 4:6, 1:3) = skew(g);
@@ -54,6 +54,7 @@ for k = 1:length(IMU)
     B(10:15,10:15) = eye(6);
     Cov_noise = noise_vector' * noise_vector;
     Q = B * Cov_noise * B;
+    Qk = Phi * Q * Phi' * dt(k);
     % update P matrix
     Phi = expm(A*dt(k));
     P = Phi * P * Phi' + Q; 
