@@ -26,11 +26,17 @@ for k = 1:length(IMU)
     % step 1: X = f(X,u)
     cur_acc = IMU(k,1:3)';                                                  % extract current acceleration from data , frame: robot frame
     cur_omega = IMU(k,4:6)';                                                % extract current omega from data
-    R_ = R * exp((cur_omega - b_g)*dt(k));                                  % update R matrix
+    R_ = R * exp(skew(cur_omega - b_g)*dt(k));                              % update R matrix
     v_ = v + R * (cur_acc - b_a) * dt(k) + g * dt(k);                       % update v vector
     p_ = p + v * dt(k) + 1/2 * (R * ( cur_acc - b_a ) + g) * dt(k) * dt(k); % update p
-    b_a_ = b_a;                                              
-    b_g_ = b_g;
+    %b_a = b_a;                                              
+    %b_g = b_g;
+    xi = zeros(5,5);
+    xi(1:3, 1:3) = R_;                                                     % update state 
+    xi(1:3, 4) = v_;
+    xi(1:3, 5) = p_;
+    xi(4, 4) = 1;
+    xi(5, 5) = 1;
     %% step 2: update the covariance, use the discrete state transition matrix Phi
     % compute A matrix
     A = zeros(15,15);
@@ -52,39 +58,37 @@ for k = 1:length(IMU)
     B = zeros(15,15);
     B(1:9, 1:9) = xi_adj;
     B(10:15,10:15) = eye(6);
-    Cov_noise = noise_vector' * noise_vector;
     Q = B * Cov_noise * B;
-    Qk = Phi * Q * Phi' * dt(k);
+    
     % update P matrix
     Phi = expm(A*dt(k));
+    Qk = Phi * Q * Phi' * dt(k);
     P = Phi * P * Phi' + Q; 
     %% correction
     % form the kinematics measurementes. 
     H = [];
     z = [];
-    if contact(1) > 0.99 % left is in contact
-        H_ = [zeros(3), -eye(3), zeros(3,9)];
-        H = [H,H_];
-        
+    if contact(k,1) > 0.99 % left is in contact
+        H = [zeros(3), -eye(3), zeros(3,9)];        
         vb = Jp_VectorNav_to_LeftToeBottom(q_leg(k,:)) * dq_leg(k,:)';
         pb = p_VectorNav_to_LeftToeBottom(q_leg(k,:));
-        v = cross(IMU(k,4:6), pb) + vb;
-        
-        z = [z;v];
+        v = cross(IMU(k,4:6), pb)' + vb;
+        [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
+        % z = [z;v];
+
     end
-    if contact(2) > 0.99 % right is in contact
-        H_ = [zeros(3), -eye(3), zeros(3,9)];
-        H = [H,H_];
-        
+    if contact(k,2) > 0.99 % right is in contact
+
+        H = [zeros(3), -eye(3), zeros(3,9)];       
         vb = Jp_VectorNav_to_RightToeBottom(q_leg(k,:)) * dq_leg(k,:)';
         pb = p_VectorNav_to_RightToeBottom(q_leg(k,:));
-        v = cross(IMU(k,4:6), pb) + vb;
-        
-        z = [z;v];
+        v = cross(IMU(k,4:6), pb)' + vb;
+        [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
+        % z = [z;v];
     end
     % excecute the covariance update steps
     if isempty(H)
-        
+
     end
     
 end
