@@ -1,6 +1,7 @@
 clear;close;clc;
 proceed_data;
 dt = diff(Time);
+dt = [dt;dt(1)];
 %% Data
 N_steps = length(Time);
 q_SE3_ = q_SE3;% zeros(N_steps,6);
@@ -42,18 +43,18 @@ for k = 1:length(IMU)
     A = zeros(15,15);
     A( 4:6, 1:3) = skew(g);
     A(7:9, 4:6) = eye(3);
-    A(1:3, 10:12) = - R;
-    A(4:6, 10:12) = -skew(v)*R;
-    A(10:12,10:12) = -skew(p)*R;
-    A(4:6, 13:15) = - R;
+    A(1:3, 10:12) = - R_;
+    A(4:6, 10:12) = -skew(v_)*R_;
+    A(10:12,10:12) = -skew(p_)*R_;
+    A(4:6, 13:15) = - R_;
     A(10:15, 10:15) = eye(6);
     % compute adjoint matrix of xi
     xi_adj = zeros(9,9);
-    xi_adj(1:3,1:3) = R;
-    xi_adj(4:6, 1:3) = -skew(v)*R;
-    xi_adj(7:9,1:3) = -skew(p)*R;
-    xi_adj(4:6, 4:6) = R;
-    xi_adj(7:9, 7:9) = R;
+    xi_adj(1:3,1:3) = R_;
+    xi_adj(4:6, 1:3) = -skew(v_)*R_;
+    xi_adj(7:9,1:3) = -skew(p_)*R_;
+    xi_adj(4:6, 4:6) = R_;
+    xi_adj(7:9, 7:9) = R_;
     % compute B and Q
     B = zeros(15,15);
     B(1:9, 1:9) = xi_adj;
@@ -90,5 +91,39 @@ for k = 1:length(IMU)
     if isempty(H)
 
     end
+    eul_angle = rotm2eul(xi(1:3,1:3));
+    position = xi(1:3,5);
+    vel = xi(1:3,4);
+    q_SE3_(k,1:6) = [position' eul_angle];
     
+    dq_SE3_(k,1:6) = [vel' cur_omega'];
+    
+end
+
+close all
+figure
+seq = [1,3,5,2,4,6];
+for k = 1:6
+    subplot(3,2,seq(k))
+    hold on
+    plot(Time(1:end),dq_SE3_(1:length(Time),k),'b')
+    plot(Time(1:end),dq_SE3_b_ref(1:length(Time),k),'r-.')
+    xlim([0,Time(end)])
+    ylim([-1,1])
+end
+
+figure
+seq = [1,3,5,2,4,6];
+for k = 1:6
+    subplot(3,2,seq(k))
+    hold on
+    if k < 4
+        plot(Time(1:end),q_SE3_(1:length(Time),k),'b')
+        % plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
+    else
+        plot(Time(1:end),wrapTo2Pi(q_SE3_(1:length(Time),k) + pi) - pi,'b')
+    end
+    plot(Time(1:end),q_SE3(1:length(Time),k),'r-.')
+    xlim([0,Time(end)])
+    % ylim([-2,2])
 end
