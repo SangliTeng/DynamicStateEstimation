@@ -10,19 +10,22 @@ q_SE3_b = q_SE3;% zeros(N_steps,6);
 dq_SE3_b = dq_SE3;% zeros(N_steps,6);
 %% Initialization
 P = eye(15);
-R = eye(3);
-p = q_SE3(1,1:3)';
-v = zeros(3,1);
+noise_R_euler = [1 1 1]*1e-2;
+noise_p = [1 1 1]'*1e-2;
+noise_v = [1 1 1]'*1e-2;
+R = eul2rotm(noise_R_euler)*eye(3);
+p = q_SE3(1,1:3)' + noise_p;
+v = zeros(3,1) + noise_v;
 b_a = zeros(3,1);
 b_g = zeros(3,1);
 g = [0 0 -9.8067]'; % gravitational force vector
 noise_omega =  [1,1,1] * 1e-4;
 noise_acc = [1,1,1] * 1e-4;
-noise_ba = [1,1,1] * 1e-5;
-noise_bg = [1,1,1] * 1e-5;
+noise_ba = [1,1,1] * 1e-12;
+noise_bg = [1,1,1] * 1e-12;
 Cov_noise = blkdiag(diag(noise_omega), diag(noise_acc), diag(zeros(1,3)), diag(noise_ba), diag(noise_bg));
 %% InEKF loop
-for k = 2000 * 3:length(IMU)
+for k = 1:length(IMU)
     %% propagation
     % step 1: X = f(X,u)
     cur_acc = IMU(k,1:3)';                                                  % extract current acceleration from data , frame: robot frame
@@ -69,26 +72,27 @@ for k = 2000 * 3:length(IMU)
     Phi = expm(A*dt(k));
     Qk = Phi * Q * Phi' * dt(k);
     P = Phi * P * Phi' + Qk; 
+    
     %% correction
     % form the kinematics measurementes. 
-    H = [];
-    % z = [];
-    if contact(k,1) > 0.99 % left is in contact
-        H = [zeros(3), -eye(3), zeros(3,9)];        
-        vb = Jp_VectorNav_to_LeftToeBottom(q_leg(k,:)) * dq_leg(k,:)';
-        pb = p_VectorNav_to_LeftToeBottom(q_leg(k,:));
-        v = cross(IMU(k,4:6), pb)' + vb;
-        [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
-        % z = [z;v];
-    end
-    if contact(k,2) > 0.99 % right is in contact
-        H = [zeros(3), -eye(3), zeros(3,9)];       
-        vb = Jp_VectorNav_to_RightToeBottom(q_leg(k,:)) * dq_leg(k,:)';
-        pb = p_VectorNav_to_RightToeBottom(q_leg(k,:));
-        v = cross(IMU(k,4:6), pb)' + vb;
-        [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
-        % z = [z;v];
-    end
+%     H = [];
+%     % z = [];
+%     if contact(k,1) > 0.99 % left is in contact
+%         H = [zeros(3), -eye(3), zeros(3,9)];        
+%         vb = Jp_VectorNav_to_LeftToeBottom(q_leg(k,:)) * dq_leg(k,:)';
+%         pb = p_VectorNav_to_LeftToeBottom(q_leg(k,:));
+%         v = cross(IMU(k,4:6), pb)' + vb;
+%         [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
+%         % z = [z;v];
+%     end
+%     if contact(k,2) > 0.99 % right is in contact
+%         H = [zeros(3), -eye(3), zeros(3,9)];       
+%         vb = Jp_VectorNav_to_RightToeBottom(q_leg(k,:)) * dq_leg(k,:)';
+%         pb = p_VectorNav_to_RightToeBottom(q_leg(k,:));
+%         v = cross(IMU(k,4:6), pb)' + vb;
+%         [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
+%         % z = [z;v];
+%     end
     % excecute the covariance update steps
     
     R = xi(1:3,1:3);
@@ -134,10 +138,20 @@ function [xi, P, b_a, b_g] =  Observation_RIEKF(xi_,P_,b_a_,b_g_,v)
         y = [-v;-1;0];                                                     % measurement
         b = zeros(5,1);    
         b(4) = -1;                                                         % construct b vector
-        Cov_nf = blkdiag(1,1,1)*1e-4;                                           % n_f
+        Cov_nf = blkdiag(1,1,1)*1e-3;                                           % n_f
         R_ = xi_(1:3,1:3);
         Nbar = R_ * Cov_nf * R_';                      
         S = H * P_ * H' + Nbar;
+        
+        if rank(S) < size(S,1)
+            xi = xi_;
+            P = P_;
+            b_a = b_a_;
+            b_g = b_g_;
+            P_
+            return;
+        end
+        
         K = P_ * H' * inv(S);                                              % filter gain 
         nu = xi_ * y - b;                                                  % innovation term
         select_mat = zeros(3,5);                                           % construct selection matrix

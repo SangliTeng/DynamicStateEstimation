@@ -5,12 +5,12 @@ function [xi, P, b_a, b_g] =  Observation_RIEKF(xi_,P_,b_a_,b_g_,v)
         y = [-v;-1;0];                                                     % measurement
         b = zeros(5,1);    
         b(4) = -1;                                                         % construct b vector
-        Cov_nf = blkdiag(1e-1,1e-1,1e-1);                                           % n_f
+        Cov_nf = 1e1*blkdiag(1,1,1);                                           % n_f
         R_ = xi_(1:3,1:3);
         Nbar = R_ * Cov_nf * R_';                      
         S = H * P_ * H' + Nbar;
         K = P_ * H' * inv(S);                                              % filter gain 
-        nu = xi_ * y - b;                                                  % innovation term
+        nu = xi_ * y - b                                                  % innovation term
         select_mat = zeros(3,5);                                           % construct selection matrix
         select_mat(1:3,1:3) = eye(3);
         %% get correction term for update
