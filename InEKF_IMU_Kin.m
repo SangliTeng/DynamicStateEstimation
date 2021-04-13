@@ -27,7 +27,10 @@ for k = 1:length(IMU)
     % step 1: X = f(X,u)
     cur_acc = IMU(k,1:3)';                                                  % extract current acceleration from data , frame: robot frame
     cur_omega = IMU(k,4:6)';                                                % extract current omega from data
-    R_ = R * exp(skew(cur_omega - b_g)*dt(k));                              % update R matrix
+%     R_t = eul2rotm(q_SE3(k, 4:6), 'ZYX');
+%     cur_acc = R_t \ IMU(k, [1:3])';
+%     cur_omega = R_t \ IMU(k, [4:6])';
+    R_ = R * expm(skew(cur_omega - b_g)*dt(k));                              % update R matrix
     v_ = v + R * (cur_acc - b_a) * dt(k) + g * dt(k);                       % update v vector
     p_ = p + v * dt(k) + 1/2 * (R * ( cur_acc - b_a ) + g) * dt(k) * dt(k); % update p
     %b_a = b_a;                                              
@@ -45,7 +48,7 @@ for k = 1:length(IMU)
     A(7:9, 4:6) = eye(3);
     A(1:3, 10:12) = - R_;
     A(4:6, 10:12) = -skew(v_)*R_;
-    A(10:12,10:12) = -skew(p_)*R_;
+    A(7:9,10:12) = -skew(p_)*R_;
     A(4:6, 13:15) = - R_;
     A(10:15, 10:15) = eye(6);
     % compute adjoint matrix of xi
@@ -59,12 +62,12 @@ for k = 1:length(IMU)
     B = zeros(15,15);
     B(1:9, 1:9) = xi_adj;
     B(10:15,10:15) = eye(6);
-    Q = B * Cov_noise * B;
+    Q = B * Cov_noise * B';
     
     % update P matrix
     Phi = expm(A*dt(k));
     Qk = Phi * Q * Phi' * dt(k);
-    P = Phi * P * Phi' + Q; 
+    P = Phi * P * Phi' + Qk; 
     %% correction
     % form the kinematics measurementes. 
     H = [];
