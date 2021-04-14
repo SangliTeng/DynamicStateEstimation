@@ -10,9 +10,9 @@ q_SE3_b = q_SE3;% zeros(N_steps,6);
 dq_SE3_b = dq_SE3;% zeros(N_steps,6);
 %% Initialization
 P = eye(15);
-noise_R_euler = [1 1 1]*0e-2;
-noise_p = [1 1 1]'*0e-2;
-noise_v = [1 1 1]'*0e-2;
+noise_R_euler = (rand(1,3)-0.5)*1e-2;
+noise_p = (rand(1,3)-0.5)'*1e-2;
+noise_v = (rand(1,3)-0.5)'*1e-2;
 R = eul2rotm(noise_R_euler)*eye(3);
 p = q_SE3(1,1:3)' + noise_p;
 v = zeros(3,1) + noise_v;
@@ -76,8 +76,7 @@ for k = 2000:length(IMU)
     % form the kinematics measurementes. 
     H = [];
     z = [];
-    measurement = 1;
-    if measurement 
+
     if contact(k,1) > 0.99 % left is in contact
         H = [zeros(3), -eye(3), zeros(3,9)];        
         vb = Jp_VectorNav_to_LeftToeBottom(q_leg(k,:)) * dq_leg(k,:)';
@@ -96,7 +95,7 @@ for k = 2000:length(IMU)
         [xi, P, b_a, b_g] = Observation_RIEKF(xi,P,b_a,b_g,v);
         % z = [z;v];
     end
-    end
+    
     %excecute the covariance update steps
    if isempty(H)
 %         eul_angle = rotm2eul(xi(1:3,1:3),'ZYX');
@@ -118,11 +117,14 @@ end
 close all
 figure
 seq = [1,3,5,2,4,6];
+legends_1 = ["dX","dY","dZ","dYaw", "dPitch", "dRoll"];
+legends_2 = ["X","Y","Z","Yaw", "Pitch", "Roll"];
 for k = 1:6
     subplot(3,2,seq(k))
     hold on
     plot(Time(1:end),dq_SE3_(1:length(Time),k),'b')
     plot(Time(1:end),dq_SE3_b_ref(1:length(Time),k),'r-.')
+    legend(legends_1(k)+" (estimated)", legends_1(k)+" (ground truth)");
     xlim([0,Time(end)])
     ylim([-1,1])
 end
@@ -140,6 +142,7 @@ for k = 1:6
         %plot(Time(1:end),q_SE3_(1:length(Time),k) - pi ,'b')
     end
     plot(Time(1:end),q_SE3(1:length(Time),k),'r-.')
+    legend(legends_2(k)+" (estimated)", legends_2(k)+" (ground truth)");
     xlim([0,Time(end)])
     % ylim([-2,2])
 end
