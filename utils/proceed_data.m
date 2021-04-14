@@ -1,4 +1,4 @@
-raw = load("Data_ROB530_raw_v2.mat");
+raw = load("Data_ROB530_raw_v3.mat");
 %% ground truth (in world frame)
 % lin_base: 1->3 position
 % lin_base: 4->6 velocity

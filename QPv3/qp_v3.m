@@ -1,4 +1,4 @@
-proceed_data;
+%proceed_data;
 
 Freq = 1000;
 N = ceil(2000 / Freq);
@@ -70,12 +70,13 @@ for i = Start+1:N:N_steps - 1 - N
     Reg = [zeros(3,16), lambda*eye(3), zeros(3,25)];
     breg = lambda*X(17:19);
     
-    
-    H = [H1;...
+    H = [
+         H1;...
          H2;...
          Reg;...
          ];
-    y = [y1;...
+    y = [
+         y1;...
          y2;...
          breg;...
          ];
@@ -91,7 +92,7 @@ for i = Start+1:N:N_steps - 1 - N
     g = -A'*b;
     
     Aeq = [zeros(20,6), eye(20,10), zeros(20, 6), [zeros(10); eye(10)], zeros(20,12)];
-    beq = [q_leg(i+N,actuated)'+randn(10,1)*1e-5; dq_leg(i+N,actuated)'+randn(10,1)*1e-5];
+    beq = [q_leg(i+N,actuated)'; dq_leg(i+N,actuated)'];
     
     mu = 0.001;
     Ain = [zeros(1, 32), mu*sign(X(33)), mu*sign(X(34)), -1, zeros(1, 9);... % Left foot friction cone
@@ -121,41 +122,68 @@ end
 figure(1);
 subplot(3,2,1);
 plot(Time(1:N:end), x_est(1:N:end), Time, q_SE3(:, 1));
+xlabel("Time (sec)");
+ylabel("Distance (m)");
 legend("X (estimated)", "X (ground truth)");
 subplot(3,2,2);
 plot(Time(1:N:end), y_est(1:N:end), Time, q_SE3(:, 2));
 legend("Y (estimated)", "Y (ground truth)");
+xlabel("Time (sec)");
+ylabel("Distance (m)");
 subplot(3,2,3);
 plot(Time(1:N:end), z_est(1:N:end), Time, q_SE3(:, 3));
 legend("Z (estimated)", "Z (ground truth)");
+xlabel("Time (sec)");
+ylabel("Distance (m)");
 
 subplot(3,2,4);
 plot(Time(1:N:end), yaw_est(1:N:end), Time, q_SE3(:, 4));
 legend("Yaw (estimated)", "Yaw (ground truth)");
+xlabel("Time (sec)");
+ylabel("Angle (rad)");
 subplot(3,2,5);
 plot(Time(1:N:end), pitch_est(1:N:end), Time, q_SE3(:, 5));
 legend("Pitch (estimated)", "Pitch (ground truth)");
+xlabel("Time (sec)");
+ylabel("Angle (rad)");
 subplot(3,2,6);
 plot(Time(1:N:end), roll_est(1:N:end), Time, q_SE3(:, 6));
 legend("Roll (estimated)", "Roll (ground truth)");
+xlabel("Time (sec)");
+ylabel("Angle (rad)");
 
 figure(2);
 subplot(3,2,1);
 plot(Time(1:N:end), dx_est(1:N:end), Time, dq_SE3(:, 1));
 legend("dX (estimated)", "dX (ground truth)");
+xlabel("Time (sec)");
+ylabel("Velocity (m/s)");
 subplot(3,2,2);
 plot(Time(1:N:end), dy_est(1:N:end), Time, dq_SE3(:, 2));
 legend("dY (estimated)", "dY (ground truth)");
+xlabel("Time (sec)");
+ylabel("Velocity (m/s)");
 subplot(3,2,3);
 plot(Time(1:N:end), dz_est(1:N:end), Time, dq_SE3(:, 3));
 legend("dZ (estimated)", "dZ (ground truth)");
+xlabel("Time (sec)");
+ylabel("Velocity (m/s)");
 
 subplot(3,2,4);
 plot(Time(1:N:end), dyaw_est(1:N:end), Time, dq_SE3(:, 4));
 legend("dYaw (estimated)", "dYaw (ground truth)");
+xlabel("Time (sec)");
+ylabel("Angular Velocity (rad/sec)");
 subplot(3,2,5);
 plot(Time(1:N:end), dpitch_est(1:N:end), Time, dq_SE3(:, 5));
 legend("dPitch (estimated)", "dPitch (ground truth)");
+xlabel("Time (sec)");
+ylabel("Angular Velocity (rad/sec)");
 subplot(3,2,6);
 plot(Time(1:N:end), droll_est(1:N:end), Time, dq_SE3(:, 6));
+xlabel("Time (sec)");
+ylabel("Angular Velocity (rad/sec)");
 legend("dRoll (estimated)", "dRoll (ground truth)");
+
+figure(3);
+plot3(x_est(1:N:end-1-N), y_est(1:N:end-1-N), z_est(1:N:end-1-N), '-b', q_SE3(:,1), q_SE3(:,2), q_SE3(:,3), '-r');

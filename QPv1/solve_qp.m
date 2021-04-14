@@ -1,5 +1,5 @@
 close all;
-proceed_data;
+%proceed_data;
 dt = diff(Time);
 n = length(dt);
 weights = [3, 5e4, 5e4, 1e3, 1e5, 1e1, 1];
