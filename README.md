@@ -28,4 +28,25 @@ Requirements
 Cassie Dynamics are provided in the form of pre-compiled Mex files. These files are compiled for Windows, so they must be recompiled to run on Mac or Linux.
 The C source files are also included in the repository.
 
+## Results
+
+For our baseline method, we got our results as:
+
+![p_plot](image/p_plot.png)
+
+![v_plot](image/v_plot.png)
+
+## Contributors
+
+The team working on this project comprises of:
+
+- Sangli Teng
+
+- Adam Goerts
+
+- Haoran Cheng
+
+- Santoshi Kulkarni
+
+- Xiaofeng Lin[<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />](www.linkedin.com/in/XiaofengLin)[<img alt="GitHub" src="https://img.shields.io/badge/github%20-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white"/>]([potBagMeat (XiaofengLin) (github.com)](https://github.com/potBagMeat))
 
