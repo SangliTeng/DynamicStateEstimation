@@ -11,10 +11,9 @@ Cassie robot under **QPv1**.
 
 We also derive a second QP formulation from the Cassie dynamics model using a different state vector formulation and implement it, under **QPv3**. 
 
-### Task-Space Decomposed Estimators
+### EKF as Map problem with holonomic constraints eliminated
 
-We further implement and evaluate state estimators using Task-Space Decomposition, in which the ground-reaction forces are eliminated by projecting
-the state into the null space of the constraint jacobian. 
+We obtain the dynamics of the base link by eliminating the ground-reaction forces via SVD. 
 
 ### Baseline InEKF Estimators
 
