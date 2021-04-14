@@ -1,4 +1,4 @@
-raw = load("Data_ROB530_raw_v2.mat");
+raw = load("Data_ROB530_raw_v3.mat");
 %% ground truth (in world frame)
 % lin_base: 1->3 position
 % lin_base: 4->6 velocity
@@ -83,6 +83,6 @@ contact = squeeze(raw.Data.s_LR.Data)';
 %%
 IMU = [squeeze(raw.outputs.pelvis.vectorNav.linearAcceleration.Data)',...
        squeeze(raw.outputs.pelvis.vectorNav.angularVelocity.Data)']; 
-Acc = squeeze(raw.acc_imu.Data(:,:));
-Acc = Acc(:,[4,5,6,1,2,3]);
+%Acc = squeeze(raw.acc_imu.Data(:,:));
+%Acc = Acc(:,[4,5,6,1,2,3]);
 %%
