@@ -17,7 +17,7 @@ We obtain the dynamics of the base link by eliminating the ground-reaction force
 
 ### Baseline InEKF Estimators
 
-Finally, we implement the state-of-the-art Invariant EKF for the Cassie robot for provide a baseline comparison for the performance of our estimators.
+Finally, we implement the state-of-the-art Invariant EKF for the Cassie robot[[2]]([[2104.04238\] Legged Robot State Estimation in Slippery Environments Using Invariant Extended Kalman Filter with Velocity Update (arxiv.org)](https://arxiv.org/abs/2104.04238)) for provide a baseline comparison for the performance of our estimators under **InEKF_IMU_Kin.m**.
 
 ## Getting Started
 
