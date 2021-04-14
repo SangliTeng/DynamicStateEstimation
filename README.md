@@ -11,7 +11,7 @@ Cassie robot under **QPv1**.
 
 We also derive a second QP formulation from the Cassie dynamics model using a different state vector formulation and implement it, under **QPv3**. 
 
-### EKF as Map problem with holonomic constraints eliminated
+### EKF as MAP problem with holonomic constraints eliminated
 
 We obtain the dynamics of the base link by eliminating the ground-reaction forces via SVD. 
 
