@@ -83,6 +83,6 @@ contact = squeeze(raw.Data.s_LR.Data)';
 %%
 IMU = [squeeze(raw.outputs.pelvis.vectorNav.linearAcceleration.Data)',...
        squeeze(raw.outputs.pelvis.vectorNav.angularVelocity.Data)']; 
-Acc = squeeze(raw.acc_imu.Data(:,:));
-Acc = Acc(:,[4,5,6,1,2,3]);
+%Acc = squeeze(raw.acc_imu.Data(:,:));
+%Acc = Acc(:,[4,5,6,1,2,3]);
 %%
