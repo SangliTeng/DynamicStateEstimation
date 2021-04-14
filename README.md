@@ -29,6 +29,9 @@ Cassie Dynamics are provided in the form of pre-compiled Mex files. These files 
 The C source files are also included in the repository.
 
 ## Results
+Below we present some results for the state estimation from the QPv3 implementation, using data generated from SimuLink and the FlatGround Controller for Cassie
+![state estimation](image/QPv3_pos.png)
+
 
 Below are some results for the baseline InEKF method:
 
