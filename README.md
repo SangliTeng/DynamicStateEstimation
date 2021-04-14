@@ -7,9 +7,9 @@ In this project we implement and compare several types of algorithms for state e
 
 Formulating state estimation as an optimization problem that can be solved with Quadratic Programming (QP) makes it easy to handle equality and 
 inequality constraints on the dynamical system. We provide an implementation of [\[1\]](https://ieeexplore.ieee.org/document/6942679) adapted for the 
-Cassie robot under **QPv1**.
+Cassie robot under **QPv1**. However, we find that the different sensor configuration of Cassie compared to the Atlas robot from Boston Dynamics (on which this method was originally evaluated) make it ill-suited for use on the Cassie robot.
 
-We also derive a second QP formulation from the Cassie dynamics model using a different state vector formulation and implement it, under **QPv3**. 
+We also derive a second QP formulation from the Cassie dynamics model using a different state vector formulation and implement it, under **QPv3**. This method provides significantly better state estimation for the Cassie robot, due to the fact that it directly estimates the robot state (rather than just the velocity) and it is more suited to the available sensors on Cassie.
 
 ### EKF as MAP problem with holonomic constraints eliminated
 
@@ -30,7 +30,7 @@ The C source files are also included in the repository.
 
 ## Results
 
-For our baseline method, we got our results as:
+Below are some results for the baseline InEKF method:
 
 ![p_plot](image/p_plot.png)
 
@@ -42,11 +42,11 @@ The team working on this project comprises of:
 
 - Sangli Teng
 
-- Adam Goerts
+- Adam Goertz
 
 - Haoran Cheng
 
 - Santoshi Kulkarni
 
-- Xiaofeng Lin[<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />](www.linkedin.com/in/xiaofenglin) [<img alt="GitHub" src="https://img.shields.io/badge/github%20-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white"/>](https://github.com/potBagMeat)
+- Xiaofeng Lin [<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />](www.linkedin.com/in/xiaofenglin) [<img alt="GitHub" src="https://img.shields.io/badge/github%20-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white"/>](https://github.com/potBagMeat)
 
