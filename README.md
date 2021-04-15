@@ -1,7 +1,7 @@
 # Dynamic State Estimation
 ROB530 Project Winter 2021
 
-In this project we implement and compare several types of algorithms for state estimation of the Cassie robot from Agility Robotics. 
+In this project we implement several dynamics-based state estimation algorithms for the Cassie robot from Agility Robotics. We also implement an Invariant EKF method as a point of comparison.
 
 ### QP Estimators
 
