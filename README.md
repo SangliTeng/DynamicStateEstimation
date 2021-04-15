@@ -49,7 +49,7 @@ The team working on this project comprises of:
 
 - Haoran Cheng
 
-- Santoshi Kulkarni
+- Santoshi Kulkarni [<img alt="GitHub" src="https://img.shields.io/badge/github%20-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white"/>](https://github.com/SantoshiK-skulk)
 
 - Xiaofeng Lin [<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />](www.linkedin.com/in/xiaofenglin) [<img alt="GitHub" src="https://img.shields.io/badge/github%20-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white"/>](https://github.com/potBagMeat)
 
