@@ -28,6 +28,22 @@ Requirements
 Cassie Dynamics are provided in the form of pre-compiled Mex files. These files are compiled for Windows, so they must be recompiled to run on Mac or Linux.
 The C source files are also included in the repository.
 
+### Running the Code
+
+The first step to running the estimator is to package the data in the format expected by the estimators. Add the `utils/` and `kin/` folders to your path in Matlab, then run
+
+```matlab
+proceed_data;
+```
+
+#### Quadratic Programming State Estimator
+
+The QP-based state estimator can be run by adding the `QPv3/` folder to your path in Matlab, then running
+
+```matlab
+qp_v3
+```
+
 ## Results
 Below we present some results for the state estimation from the QPv3 implementation, using data generated from SimuLink and the FlatGround Controller for Cassie
 ![state estimation](image/QPv3_pos.png)
