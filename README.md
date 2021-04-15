@@ -44,7 +44,16 @@ The QP-based state estimator can be run by adding the `QPv3/` folder to your pat
 qp_v3
 ```
 
+#### Baseline InEKF Estimators
+
+The baseline InEKF estimators can be run by 
+
+```
+InEKF_IMU_Kin
+```
+
 ## Results
+
 Below we present some results for the state estimation from the QPv3 implementation, using data generated from SimuLink and the FlatGround Controller for Cassie
 ![state estimation](image/QPv3_pos.png)
 
