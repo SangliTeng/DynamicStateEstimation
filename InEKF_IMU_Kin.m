@@ -25,6 +25,8 @@ noise_acc = [1,1,1] * 1e-4;
 noise_ba = [1,1,1] * 1e-12;
 noise_bg = [1,1,1] * 1e-12;
 Cov_noise = blkdiag(diag(noise_omega), diag(noise_acc), diag(zeros(1,3)), diag(noise_ba), diag(noise_bg));
+IMU(:,4:6) = IMU(:,4:6) + randn(size(IMU(:,4:6)))*1e-4;
+IMU(:,1:3) = IMU(:,1:3) + randn(size(IMU(:,4:6)))*1e-4;
 %% InEKF loop
 for k = 2000:length(IMU)
     %% propagation
@@ -98,52 +100,49 @@ for k = 2000:length(IMU)
     
     %excecute the covariance update steps
    if isempty(H)
-%         eul_angle = rotm2eul(xi(1:3,1:3),'ZYX');
-%         position = xi(1:3,5);
-%         vel = xi(1:3,4);
-%         q_SE3_(k,1:6) = [position' eul_angle];
-%     
-%         dq_SE3_(k,1:6) = [vel' cur_omega'];
+       
    end
     R = xi(1:3,1:3);
     p = xi(1:3,5);
     v = xi(1:3,4);
-    
-    q_SE3_(k,1:6) = [p' rotm2eul(R)];
-    dq_SE3_(k,1:6) = [v' cur_omega'];
-    
+    q_SE3_b(k,1:6) = [p' rotm2eul(R)];
+    dq_SE3_b(k,1:6) = [v' cur_omega'];
+    dq_SE3_b(k,1:3) = R \ dq_SE3_b(k,1:3)'; 
+    dq_SE3_b_ref(k,1:3) = R \ dq_SE3_b_ref(k,1:3)';
 end
-
-close all
-figure
-seq = [1,3,5,2,4,6];
-legends_1 = ["dX","dY","dZ","dYaw", "dPitch", "dRoll"];
-legends_2 = ["X","Y","Z","Yaw", "Pitch", "Roll"];
-for k = 1:6
-    subplot(3,2,seq(k))
-    hold on
-    plot(Time(1:end),dq_SE3_(1:length(Time),k),'b')
-    plot(Time(1:end),dq_SE3_b_ref(1:length(Time),k),'r-.')
-    legend(legends_1(k)+" (estimated)", legends_1(k)+" (ground truth)");
-    xlim([0,Time(end)])
-    ylim([-1,1])
-end
-
-figure
-seq = [1,3,5,2,4,6];
-for k = 1:6
-    subplot(3,2,seq(k))
-    hold on
-    if k < 4
-        plot(Time(1:end),q_SE3_(1:length(Time),k),'b')
-        % plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
-    else
-        plot(Time(1:end),wrapTo2Pi(q_SE3_(1:length(Time),k) + pi) - pi,'b')
-        %plot(Time(1:end),q_SE3_(1:length(Time),k) - pi ,'b')
-    end
-    plot(Time(1:end),q_SE3(1:length(Time),k),'r-.')
-    legend(legends_2(k)+" (estimated)", legends_2(k)+" (ground truth)");
-    xlim([0,Time(end)])
-    % ylim([-2,2])
-end
-
+N = 2;
+plot_530;
+% 
+% close all
+% figure
+% seq = [1,3,5,2,4,6];
+% legends_1 = ["dX","dY","dZ","dYaw", "dPitch", "dRoll"];
+% legends_2 = ["X","Y","Z","Yaw", "Pitch", "Roll"];
+% for k = 1:6
+%     subplot(3,2,seq(k))
+%     hold on
+%     plot(Time(1:end),dq_SE3_(1:length(Time),k),'b')
+%     plot(Time(1:end),dq_SE3_b_ref(1:length(Time),k),'r-.')
+%     legend(legends_1(k)+" (estimated)", legends_1(k)+" (ground truth)");
+%     xlim([0,Time(end)])
+%     ylim([-1,1])
+% end
+% 
+% figure
+% seq = [1,3,5,2,4,6];
+% for k = 1:6
+%     subplot(3,2,seq(k))
+%     hold on
+%     if k < 4
+%         plot(Time(1:end),q_SE3_(1:length(Time),k),'b')
+%         % plot(Time(1:N:end),pos_int(dq_SE3_(1:N:length(Time),k),dt),'g')
+%     else
+%         plot(Time(1:end),wrapTo2Pi(q_SE3_(1:length(Time),k) + pi) - pi,'b')
+%         %plot(Time(1:end),q_SE3_(1:length(Time),k) - pi ,'b')
+%     end
+%     plot(Time(1:end),q_SE3(1:length(Time),k),'r-.')
+%     legend(legends_2(k)+" (estimated)", legends_2(k)+" (ground truth)");
+%     xlim([0,Time(end)])
+%     % ylim([-2,2])
+% end
+% 
